@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Globe, Ship, Anchor, CheckCircle2, ArrowRight, MapPin, Send } from 'lucide-react';
+import { ArrowRight, Globe, ShieldCheck } from 'lucide-react';
 import SEO from '../components/common/SEO';
 import TopBar from '../components/common/TopBar';
 import Navbar from '../components/common/Navbar';
@@ -14,7 +14,7 @@ const GlobalMarketsPage = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <SEO
         title="Global Markets & Trade Corridors"
-        description="Connecting India with global manufacturing hubs across Asia, Europe and the Middle East. Specialized maritime trade logistics centered at Nhava Sheva (JNPT)."
+        description="Connecting India with global manufacturing hubs across Asia and the Middle East. Specialized maritime trade logistics centered at Nhava Sheva (JNPT)."
       />
       <TopBar />
       <Navbar onOpenRfq={() => setRfqModalOpen(true)} />
@@ -52,7 +52,7 @@ const GlobalMarketsPage = () => {
           </div>
         </section>
 
-        {/* Country Profiles Grid */}
+        {/* Country Profiles Grid - Only country names with sleek modern styling */}
         <section className="py-16 sm:py-20 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="mb-10 text-center max-w-2xl mx-auto space-y-2">
@@ -60,46 +60,29 @@ const GlobalMarketsPage = () => {
                 Strategic Trade Partners & Corridors
               </h2>
               <p className="text-sm text-slate-600">
-                Operating multi-modal logistics linking key manufacturing hubs with Indian industrial buyers.
+                Operating multi-modal cross-border logistics linking high-yield international industrial hubs.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="flex flex-wrap justify-center gap-5">
               {targetMarkets.map((m, idx) => (
                 <div
                   key={idx}
-                  className="bg-surface-light rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all space-y-3"
+                  className="group bg-surface-light hover:bg-white rounded-xl p-5 border border-slate-200 hover:border-brand-gold/50 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col items-center text-center justify-between min-h-[140px] w-[calc(50%-0.75rem)] sm:w-[calc(33.333%-0.85rem)] lg:w-[calc(25%-1rem)] max-w-[260px]"
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2.5">
-                      <span className="text-3xl">{m.flag}</span>
-                      <div>
-                        <h3 className="text-base font-bold text-slate-900">{m.country}</h3>
-                        <span className="text-[10px] text-slate-400 font-mono font-bold">{m.code}</span>
-                      </div>
-                    </div>
-                    <span className="badge-dark text-[10px]">Active Hub</span>
+                  <div className="w-12 h-12 rounded-full bg-white shadow-xs border border-slate-100 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+                    {m.flag}
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    {m.role}
-                  </p>
+                  <div className="my-2">
+                    <h3 className="text-base font-bold text-slate-900 group-hover:text-brand-navy transition-colors">
+                      {m.country}
+                    </h3>
+                  </div>
 
-                  <div className="pt-2 border-t border-slate-200">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
-                      Key Corridors & Ports:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {m.keyPorts.map((port, pIdx) => (
-                        <span
-                          key={pIdx}
-                          className="px-2 py-0.5 rounded text-[11px] bg-white border border-slate-200 text-slate-700 flex items-center gap-1"
-                        >
-                          <Anchor className="w-3 h-3 text-brand-gold" />
-                          <span>{port}</span>
-                        </span>
-                      ))}
-                    </div>
+                  <div className="flex items-center gap-1.5 text-[11px] font-semibold text-brand-gold bg-brand-gold/10 px-2.5 py-0.5 rounded-full border border-brand-gold/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
+                    <span>Active Corridor</span>
                   </div>
                 </div>
               ))}

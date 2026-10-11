@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialPageContent, sampleInquiries } from '../data/initialData';
 import { servicesData } from '../data/services';
-import { productCategories } from '../data/products';
+import { productCategories, CATEGORY_IMAGE_POOL } from '../data/products';
 import { companyInfo } from '../data/company';
 import { industriesData } from '../data/industries';
 import { supabase } from '@/integrations/supabase/client';
@@ -22,7 +22,22 @@ export const ContentProvider = ({ children }) => {
   const [pageContent, setPageContent] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PAGE_CONTENT);
-      return saved ? JSON.parse(saved) : initialPageContent;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.quickFeatures) {
+          parsed.quickFeatures = parsed.quickFeatures.map(item => {
+            if (item.id === 'qf-2' && item.title === 'Import & Export') {
+              return { ...item, title: 'Export & Import' };
+            }
+            if (item.id === 'qf-5' && (item.title.includes('Retainer') || item.title.includes('Commission'))) {
+              return { ...item, title: 'Strategic Partnership', desc: 'Flexible partnership models' };
+            }
+            return item;
+          });
+        }
+        return parsed;
+      }
+      return initialPageContent;
     } catch (e) {
       return initialPageContent;
     }
@@ -32,7 +47,16 @@ export const ContentProvider = ({ children }) => {
   const [services, setServices] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.SERVICES);
-      return saved ? JSON.parse(saved) : servicesData;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return parsed.map(s => {
+          if (s.title && (s.title.includes('Retainer') || s.title.includes('Commission'))) {
+            return { ...s, title: 'Strategic Partnership' };
+          }
+          return s;
+        });
+      }
+      return servicesData;
     } catch (e) {
       return servicesData;
     }
@@ -42,7 +66,20 @@ export const ContentProvider = ({ children }) => {
   const [products, setProducts] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      return saved ? JSON.parse(saved) : productCategories;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Automatically migrate any broken unsplash images or missing images to local sequential pool
+        return parsed.map((cat, idx) => {
+          if (!cat.image || cat.image.includes('unsplash.com')) {
+            return {
+              ...cat,
+              image: CATEGORY_IMAGE_POOL[idx % CATEGORY_IMAGE_POOL.length]
+            };
+          }
+          return cat;
+        });
+      }
+      return productCategories;
     } catch (e) {
       return productCategories;
     }
@@ -52,7 +89,18 @@ export const ContentProvider = ({ children }) => {
   const [company, setCompany] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.COMPANY);
-      return saved ? JSON.parse(saved) : companyInfo;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        // Ensure new phone and email take precedence over old defaults
+        return {
+          ...companyInfo,
+          ...parsed,
+          email: 'info@novasphereexim.com',
+          phone: '+91 90227 82655',
+          whatsapp: '+91 90227 82655'
+        };
+      }
+      return companyInfo;
     } catch (e) {
       return companyInfo;
     }
@@ -185,39 +233,99 @@ export const ContentProvider = ({ children }) => {
     setServices(prev => prev.filter(s => s.id !== serviceId));
   };
 
+  // --- Product Categories (Sections) CRUD ---
+  const addProductCategory = (newCat) => {
+    const categoryId = newCat.id || newCat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const fallbackImage = CATEGORY_IMAGE_POOL[products.length % CATEGORY_IMAGE_POOL.length];
+    const categoryToAdd = {
+      id: categoryId,
+      name: newCat.name,
+      tagline: newCat.tagline || 'Specialized Global Trade Portfolio',
+      description: newCat.description || '',
+      image: newCat.image || fallbackImage,
+      bullets: newCat.bullets || [],
+      products: newCat.products || []
+    };
+    setProducts(prev => [...prev, categoryToAdd]);
+    return categoryToAdd;
+  };
+
+  const updateProductCategory = (categoryId, updatedFields) => {
+    setProducts(prev =>
+      prev.map(cat =>
+        cat.id === categoryId
+          ? { ...cat, ...updatedFields, products: updatedFields.products || cat.products }
+          : cat
+      )
+    );
+  };
+
+  const deleteProductCategory = (categoryId) => {
+    setProducts(prev => prev.filter(cat => cat.id !== categoryId));
+  };
+
+  // --- Products CRUD ---
   const updateProduct = (categoryId, updatedProduct) => {
     setProducts(prev =>
       prev.map(cat => {
-        if (cat.id !== categoryId) return cat;
-        return {
-          ...cat,
-          products: cat.products.map(p =>
-            p.id === updatedProduct.id ? updatedProduct : p
-          )
-        };
+        // If categoryId matches, update product inside it
+        if (cat.id === categoryId) {
+          return {
+            ...cat,
+            products: (cat.products || []).map(p =>
+              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+            )
+          };
+        }
+        // Fallback: check if the product belongs to this category even if categoryId param was omitted/mismatched
+        const hasProduct = (cat.products || []).some(p => p.id === updatedProduct.id);
+        if (hasProduct) {
+          return {
+            ...cat,
+            products: cat.products.map(p =>
+              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+            )
+          };
+        }
+        return cat;
       })
     );
   };
 
   const addProduct = (categoryId, newProduct) => {
-    setProducts(prev =>
-      prev.map(cat => {
-        if (cat.id !== categoryId) return cat;
-        return {
-          ...cat,
-          products: [...(cat.products || []), newProduct]
-        };
-      })
-    );
+    setProducts(prev => {
+      // Check if target category exists
+      const targetCatExists = prev.some(c => c.id === categoryId);
+      if (targetCatExists) {
+        return prev.map(cat => {
+          if (cat.id !== categoryId) return cat;
+          return {
+            ...cat,
+            products: [...(cat.products || []), newProduct]
+          };
+        });
+      }
+      // If target category doesn't exist, append to the first category
+      if (prev.length > 0) {
+        return prev.map((cat, idx) => {
+          if (idx !== 0) return cat;
+          return {
+            ...cat,
+            products: [...(cat.products || []), newProduct]
+          };
+        });
+      }
+      return prev;
+    });
   };
 
   const deleteProduct = (categoryId, productId) => {
     setProducts(prev =>
       prev.map(cat => {
-        if (cat.id !== categoryId) return cat;
+        if (categoryId && cat.id !== categoryId) return cat;
         return {
           ...cat,
-          products: cat.products.filter(p => p.id !== productId)
+          products: (cat.products || []).filter(p => p.id !== productId)
         };
       })
     );
@@ -230,10 +338,28 @@ export const ContentProvider = ({ children }) => {
     }));
   };
 
+  // --- Industries CRUD ---
+  const addIndustry = (newInd) => {
+    const id = newInd.id || newInd.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    const entry = {
+      id,
+      name: newInd.name,
+      shortDesc: newInd.shortDesc || '',
+      icon: newInd.icon || 'Factory',
+      productsSupplied: newInd.productsSupplied || []
+    };
+    setIndustries(prev => [...prev, entry]);
+    return entry;
+  };
+
   const updateIndustry = (updatedInd) => {
     setIndustries(prev =>
-      prev.map(i => (i.id === updatedInd.id ? updatedInd : i))
+      prev.map(i => (i.id === updatedInd.id ? { ...i, ...updatedInd } : i))
     );
+  };
+
+  const deleteIndustry = (industryId) => {
+    setIndustries(prev => prev.filter(i => i.id !== industryId));
   };
 
   const addInquiry = (inquiry) => {
@@ -285,13 +411,18 @@ export const ContentProvider = ({ children }) => {
         addService,
         deleteService,
         products,
+        addProductCategory,
+        updateProductCategory,
+        deleteProductCategory,
         updateProduct,
         addProduct,
         deleteProduct,
         company,
         updateCompanyInfo,
         industries,
+        addIndustry,
         updateIndustry,
+        deleteIndustry,
         inquiries,
         addInquiry,
         updateInquiryStatus,

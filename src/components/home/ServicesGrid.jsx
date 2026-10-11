@@ -31,15 +31,15 @@ const ServicesGrid = () => {
           </p>
         </div>
 
-        {/* 6-Pillar Detailed Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {/* Dynamic Centered Detailed Grid */}
+        <div className="flex flex-wrap justify-center gap-8">
           {services.map((service) => {
             const IconComponent = iconMap[service.icon] || Globe;
 
             return (
               <div
                 key={service.id}
-                className="bg-white rounded-xl p-8 border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
+                className="bg-white rounded-xl p-8 border border-slate-200/80 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1 w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] max-w-md"
               >
                 <div>
                   {/* Top Bar with Number & Icon */}
@@ -95,7 +95,7 @@ const ServicesGrid = () => {
           <div className="space-y-2 max-w-2xl">
             <span className="badge-gold">Commercial Structure</span>
             <h3 className="text-xl font-bold text-white">
-              Flexible Partnership Model: Retainer + Performance Commission
+              Flexible Partnership Model: Strategic Partnership
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               We align our commercial compensation with your sales growth. International manufacturers gain dedicated ground execution in India without fixed foreign subsidiary overhead.

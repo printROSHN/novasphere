@@ -27,10 +27,10 @@ export function AdminLayout() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Check demo admin bypass from localStorage so evaluation/testing works smoothly
-  const isDemoAdmin = localStorage.getItem('novasphere_demo_admin') === 'true';
+  // Check for stored admin session
+  const hasLocalAdmin = !!localStorage.getItem('novasphere_admin_session');
 
-  if (loading && !isDemoAdmin) {
+  if (loading && !hasLocalAdmin && !user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white">
         <div className="flex flex-col items-center gap-3">
@@ -41,8 +41,8 @@ export function AdminLayout() {
     );
   }
 
-  // If not authenticated and not in demo mode, redirect to admin login
-  if (!user && !isDemoAdmin) {
+  // If not authenticated, redirect to admin login
+  if (!user && !hasLocalAdmin) {
     return <Navigate to="/admin/login" replace state={{ from: location }} />;
   }
 
@@ -96,7 +96,7 @@ export function AdminLayout() {
               </div>
               <div className="hidden md:block text-left">
                 <p className="font-bold text-slate-800 leading-tight">Trade Desk Admin</p>
-                <p className="text-[10px] text-slate-400">suyash23yewale@gmail.com</p>
+                <p className="text-[10px] text-slate-400">info@novasphereexim.com</p>
               </div>
             </div>
           </div>

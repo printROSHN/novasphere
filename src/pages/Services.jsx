@@ -131,10 +131,10 @@ const Services = () => {
             <div className="bg-brand-navy rounded-2xl p-8 sm:p-12 border border-brand-gold/50 shadow-2xl space-y-6">
               <span className="badge-gold">Specialized Commercial Model</span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-                Retainer + Commission Partnership Structure
+                Strategic Partnership Structure
               </h2>
               <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-3xl">
-                For international manufacturers seeking to build an active sales channel in India, NovaSphere Exim provides a turnkey local presence that combines the accountability of dedicated representation with commission-based performance incentives.
+                For international manufacturers seeking to build an active sales channel in India, NovaSphere Exim provides a turnkey local presence that combines the accountability of dedicated representation with performance-based incentives aligned with your business growth.
               </p>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">

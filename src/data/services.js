@@ -93,12 +93,12 @@ export const servicesData = [
 
 export const businessModels = [
   {
-    title: "Retainer + Commission",
+    title: "Strategic Partnership",
     badge: "Flexible Partnership Models",
-    description: "A hybrid commercial model providing predictable dedicated representation combined with performance incentives for maximum deal closure.",
+    description: "A collaborative commercial model providing predictable dedicated representation combined with performance incentives for maximum deal closure and long-term business growth.",
     highlights: [
       "Dedicated account executive handling your regional product inquiries",
-      "Incentive-aligned success commission tied directly to executed purchase volumes",
+      "Incentive-aligned success metrics tied directly to executed purchase volumes",
       "Transparent monthly activity logs, prospect interactions, and pipeline audits",
       "No permanent overseas overhead or local foreign subsidiary setup costs"
     ]

@@ -30,15 +30,15 @@ const WhyChooseUs = () => {
           </p>
         </div>
 
-        {/* 5-Column Grid matching mockup */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* Dynamic Centered Grid */}
+        <div className="flex flex-wrap justify-center gap-6">
           {whyChooseUs.items.map((item, idx) => {
             const IconComponent = iconMap[item.icon] || ShieldCheck;
 
             return (
               <div
                 key={item.id || idx}
-                className="bg-surface-light rounded-xl p-6 text-center border border-slate-200/80 hover:border-brand-gold/50 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-between group hover:-translate-y-1"
+                className="bg-surface-light rounded-xl p-6 text-center border border-slate-200/80 hover:border-brand-gold/50 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col items-center justify-between group hover:-translate-y-1 w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(20%-1.2rem)] min-w-[200px] max-w-[240px]"
               >
                 <div>
                   <div className="w-12 h-12 rounded-full bg-brand-navy/5 text-brand-navy group-hover:bg-brand-gold group-hover:text-brand-dark flex items-center justify-center transition-all duration-200 mb-4 mx-auto">

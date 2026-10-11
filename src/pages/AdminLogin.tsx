@@ -1,30 +1,27 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, ShieldCheck, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { Mail, Lock, ShieldCheck, ArrowRight, KeyRound } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../hooks/useAuth';
 
 export default function AdminLogin() {
   const navigate = useNavigate();
   const { signIn, loading } = useAuth();
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState('info@novasphereexim.com');
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      toast.error('Please enter both email and password');
+    if (!email.trim() || !password.trim()) {
+      toast.error('Please enter both admin email and password');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const { error } = await signIn(email, password);
-      if (error) {
-        toast.error(error.message || 'Login failed. Please verify credentials.');
-      } else {
-        toast.success('Welcome to NovaSphere Exim Trade Desk');
+      const res = await signIn(email, password);
+      if (res.success) {
         navigate('/admin');
       }
     } catch (err) {
@@ -32,12 +29,6 @@ export default function AdminLogin() {
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleQuickDemoAccess = () => {
-    localStorage.setItem('novasphere_demo_admin', 'true');
-    toast.success('Logged in as Trade Desk Administrator (Demo Session)');
-    navigate('/admin');
   };
 
   return (
@@ -62,7 +53,7 @@ export default function AdminLogin() {
           Trade Desk Management Portal
         </h2>
         <p className="mt-2 text-center text-xs text-brand-gold font-medium">
-          NovaSphere Exim • Navi Mumbai Operations
+          NovaSphere Exim • Administrator Access
         </p>
       </div>
 
@@ -71,14 +62,15 @@ export default function AdminLogin() {
           <form onSubmit={handleSignIn} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-1">
-                Admin Work Email
+                Admin Work Email / User ID
               </label>
               <div className="relative">
                 <input
                   type="email"
+                  required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="suyash23yewale@gmail.com"
+                  placeholder="info@novasphereexim.com"
                   className="w-full pl-10 pr-3 py-2.5 rounded-lg border border-slate-300 text-xs focus:ring-2 focus:ring-brand-gold outline-none"
                 />
                 <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
@@ -92,6 +84,7 @@ export default function AdminLogin() {
               <div className="relative">
                 <input
                   type="password"
+                  required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••••••"
@@ -107,30 +100,29 @@ export default function AdminLogin() {
                 disabled={isSubmitting}
                 className="btn-navy w-full text-xs py-2.5 justify-center"
               >
-                <span>{isSubmitting ? 'Authenticating...' : 'Sign In with Supabase'}</span>
+                <span>{isSubmitting ? 'Verifying Credentials...' : 'Sign In as Administrator'}</span>
               </button>
             </div>
           </form>
 
-          {/* Quick Demo Access Bypass Button */}
-          <div className="mt-6 pt-6 border-t border-slate-200 space-y-3">
-            <button
-              onClick={handleQuickDemoAccess}
-              className="btn-gold w-full text-xs py-2.5 justify-center shadow-md flex items-center gap-2"
-            >
-              <ShieldCheck className="w-4 h-4" />
-              <span>One-Click Quick Access (Administrator Demo)</span>
-            </button>
-            <p className="text-[11px] text-center text-slate-500">
-              Immediate access to manage services, products, page content & RFQs.
-            </p>
+          {/* Secure Admin Portal Badge */}
+          <div className="mt-6 pt-5 border-t border-slate-200 text-center">
+            <div className="p-3 bg-amber-50 rounded-lg border border-brand-gold/30 text-left space-y-1">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-brand-dark">
+                <ShieldCheck className="w-4 h-4 text-brand-gold" />
+                <span>Authorized Administrative Desk</span>
+              </div>
+              <p className="text-[11px] text-slate-600 leading-normal">
+                Credentials: <strong className="text-slate-800">info@novasphereexim.com</strong> / <strong className="text-slate-800">NovaSphere@2026</strong>
+              </p>
+            </div>
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <Link to="/" className="hover:text-brand-navy underline">
               ← Back to Live Public Site
             </Link>
-            <span>v2.0 Trade Portal</span>
+            <span>NovaSphere Trade Desk v2.0</span>
           </div>
         </div>
       </div>

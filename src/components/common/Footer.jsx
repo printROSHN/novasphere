@@ -108,7 +108,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link to="/services#retainer-commission" className="hover:text-brand-gold transition-colors font-medium text-brand-gold">
-                  Retainer + Commission Model
+                  Strategic Partnership Model
                 </Link>
               </li>
               <li>

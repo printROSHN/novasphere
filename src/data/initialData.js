@@ -22,7 +22,7 @@ export const initialPageContent = {
     },
     {
       id: "qf-2",
-      title: "Import & Export",
+      title: "Export & Import",
       desc: "Facilitate international trade opportunities",
       icon: "Ship"
     },
@@ -40,7 +40,7 @@ export const initialPageContent = {
     },
     {
       id: "qf-5",
-      title: "Retainer + Commission",
+      title: "Strategic Partnership",
       desc: "Flexible partnership models",
       icon: "Handshake"
     }
@@ -77,7 +77,7 @@ export const initialPageContent = {
       {
         id: "wcu-3",
         title: "Flexible Partnership",
-        desc: "Retainer, commission or hybrid models",
+        desc: "Strategic partnership or hybrid commercial models",
         icon: "Sliders"
       },
       {
@@ -141,7 +141,7 @@ export const sampleInquiries = [
     country: "China",
     inquiry_type: "Manufacturer seeking representation",
     product_interest: "Foundry & Metallurgy",
-    message: "We are an established producer of graphitized petroleum coke and recarburizers seeking a dedicated India representative to reach Tier-1 Indian foundries on a retainer + commission model.",
+    message: "We are an established producer of graphitized petroleum coke and recarburizers seeking a dedicated India representative to reach Tier-1 Indian foundries on a strategic partnership model.",
     status: "contacted",
     created_at: new Date(Date.now() - 3600000 * 24).toISOString()
   },

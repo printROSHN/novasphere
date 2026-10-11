@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Globe, Navigation, ShieldCheck } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { targetMarkets } from '../../data/markets';
 
 const GlobalMarkets = () => {
@@ -30,7 +30,7 @@ const GlobalMarkets = () => {
             </div>
           </div>
 
-          {/* Center Column: Stylized Vector SVG World Map with India Centered Trade Corridors */}
+          {/* Center Column: Stylized Vector SVG World Map with India Centered Trade Corridors (Europe removed) */}
           <div className="lg:col-span-5 relative">
             <div className="relative w-full aspect-[16/10] bg-brand-dark rounded-2xl overflow-hidden p-4 shadow-xl border border-brand-blue/60 flex items-center justify-center">
               {/* World Map SVG Vector */}
@@ -80,15 +80,20 @@ const GlobalMarkets = () => {
                 <circle cx="740" cy="330" r="4" fill="#60A5FA" />
                 <text x="750" y="345" fill="#93C5FD" fontSize="10" textAnchor="start">Vietnam</text>
 
-                {/* 3. Middle East (UAE / Saudi) */}
+                {/* 3. Indonesia */}
+                <path d="M640 290 Q690 350 710 390" stroke="#D4A017" strokeWidth="2" strokeDasharray="4 4" opacity="0.8" />
+                <circle cx="710" cy="390" r="4" fill="#60A5FA" />
+                <text x="710" y="405" fill="#93C5FD" fontSize="10" textAnchor="middle">Indonesia</text>
+
+                {/* 4. Middle East (UAE / Saudi) */}
                 <path d="M640 290 Q590 260 560 270" stroke="#D4A017" strokeWidth="2" strokeDasharray="4 4" opacity="0.8" />
                 <circle cx="560" cy="270" r="4" fill="#60A5FA" />
-                <text x="545" y="260" fill="#93C5FD" fontSize="10" textAnchor="middle">UAE/Saudi</text>
+                <text x="545" y="260" fill="#93C5FD" fontSize="10" textAnchor="middle">UAE / Saudi</text>
 
-                {/* 4. Europe (Italy / Germany / Poland) */}
-                <path d="M640 290 Q550 200 490 190" stroke="#D4A017" strokeWidth="2" strokeDasharray="4 4" opacity="0.8" />
-                <circle cx="490" cy="190" r="4" fill="#60A5FA" />
-                <text x="480" y="180" fill="#93C5FD" fontSize="10" textAnchor="middle">Europe</text>
+                {/* 5. Turkey */}
+                <path d="M640 290 Q570 230 520 230" stroke="#D4A017" strokeWidth="2" strokeDasharray="4 4" opacity="0.8" />
+                <circle cx="520" cy="230" r="4" fill="#60A5FA" />
+                <text x="510" y="220" fill="#93C5FD" fontSize="10" textAnchor="middle">Turkey</text>
               </svg>
 
               <div className="absolute bottom-3 left-4 text-[10px] text-slate-400 flex items-center gap-1.5">
@@ -105,20 +110,22 @@ const GlobalMarkets = () => {
                 <h3 className="text-xs font-bold uppercase tracking-wider text-brand-dark">
                   Our Target Markets
                 </h3>
-                <span className="text-[10px] font-bold text-brand-gold">10 Corridors</span>
+                <span className="text-[10px] font-bold text-brand-gold">{targetMarkets.length} Corridors</span>
               </div>
 
               <div className="grid grid-cols-1 gap-1.5 max-h-[320px] overflow-y-auto pr-1">
                 {targetMarkets.map((m, idx) => (
                   <div
                     key={idx}
-                    className="flex items-center justify-between py-1.5 px-2 rounded-md hover:bg-white transition-colors text-xs"
+                    className="flex items-center justify-between py-2 px-2.5 rounded-lg hover:bg-white transition-colors text-xs"
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-base">{m.flag}</span>
-                      <span className="font-semibold text-slate-800">{m.country}</span>
+                    <div className="flex items-center gap-2.5">
+                      <span className="text-xl">{m.flag}</span>
+                      <span className="font-semibold text-slate-800 text-sm">{m.country}</span>
                     </div>
-                    <span className="text-[10px] text-slate-500 font-mono">{m.code}</span>
+                    <span className="text-[10px] text-slate-500 font-mono font-bold bg-slate-100 px-1.5 py-0.5 rounded">
+                      {m.code}
+                    </span>
                   </div>
                 ))}
               </div>

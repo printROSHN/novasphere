@@ -4,13 +4,11 @@ import SEO from '../components/common/SEO';
 import TopBar from '../components/common/TopBar';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
-import ProductSpecModal from '../components/modals/ProductSpecModal';
 import RfqModal from '../components/modals/RfqModal';
 import { useContent } from '../contexts/ContentContext';
 
 const Products = () => {
   const { products } = useContent();
-  const [selectedProductForModal, setSelectedProductForModal] = useState(null);
   const [rfqModalOpen, setRfqModalOpen] = useState(false);
   const [rfqInitialData, setRfqInitialData] = useState({});
 
@@ -84,11 +82,11 @@ const Products = () => {
               </div>
 
               {/* Products in this category */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="flex flex-wrap justify-center gap-8">
                 {cat.products?.map((prod) => (
                   <div
                     key={prod.id}
-                    className={`rounded-2xl p-6 sm:p-8 border transition-all duration-300 flex flex-col justify-between ${
+                    className={`rounded-2xl p-6 sm:p-8 border transition-all duration-300 flex flex-col justify-between w-full lg:w-[calc(50%-1rem)] max-w-xl ${
                       prod.featured
                         ? 'border-brand-gold/60 shadow-lg ring-1 ring-brand-gold/30 bg-white'
                         : 'border-slate-200 shadow-sm hover:shadow-md bg-white'
@@ -119,23 +117,7 @@ const Products = () => {
                         {prod.shortDesc}
                       </p>
 
-                      {/* Chemical Specifications Mini-Table */}
-                      {prod.specifications && (
-                        <div className="mb-6 bg-surface-light rounded-lg p-3 border border-slate-200 text-xs">
-                          <div className="font-bold text-slate-700 mb-2 flex items-center gap-1.5">
-                            <FileSpreadsheet className="w-3.5 h-3.5 text-brand-gold" />
-                            <span>Typical Chemical Composition:</span>
-                          </div>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                            {prod.specifications.slice(0, 4).map((spec, sIdx) => (
-                              <div key={sIdx} className="bg-white p-2 rounded border border-slate-100">
-                                <div className="text-[10px] text-slate-400 font-medium">{spec.property}</div>
-                                <div className="text-xs font-bold text-brand-navy">{spec.value}</div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+
 
                       {/* Applications Tags */}
                       {prod.applications && (
@@ -157,22 +139,14 @@ const Products = () => {
                       )}
                     </div>
 
-                    {/* Action Buttons */}
-                    <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center gap-3">
-                      <button
-                        onClick={() => setSelectedProductForModal(prod.id)}
-                        className="btn-navy text-xs px-4 py-2 flex-1 sm:flex-initial"
-                      >
-                        <FileSpreadsheet className="w-3.5 h-3.5" />
-                        <span>View Technical Specs & Sizing</span>
-                      </button>
-
+                    {/* Action Button */}
+                    <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
                       <button
                         onClick={() => handleOpenRfq({ product: prod.name })}
-                        className="btn-gold text-xs px-4 py-2 flex-1 sm:flex-initial"
+                        className="btn-gold text-xs px-5 py-2.5 flex items-center gap-1.5 shadow-sm"
                       >
                         <Send className="w-3.5 h-3.5" />
-                        <span>Request Quote</span>
+                        <span>Request Quote / Trade Enquiry</span>
                       </button>
                     </div>
                   </div>
@@ -185,13 +159,7 @@ const Products = () => {
 
       <Footer />
 
-      {selectedProductForModal && (
-        <ProductSpecModal
-          productId={selectedProductForModal}
-          onClose={() => setSelectedProductForModal(null)}
-          onOpenRfq={handleOpenRfq}
-        />
-      )}
+
 
       <RfqModal
         isOpen={rfqModalOpen}

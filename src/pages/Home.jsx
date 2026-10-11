@@ -14,11 +14,9 @@ import WhyChooseUs from '../components/home/WhyChooseUs';
 import ContactSection from '../components/home/ContactSection';
 import BottomCTA from '../components/home/BottomCTA';
 import Footer from '../components/common/Footer';
-import ProductSpecModal from '../components/modals/ProductSpecModal';
 import RfqModal from '../components/modals/RfqModal';
 
 const Home = () => {
-  const [specModalProduct, setSpecModalProduct] = useState(null);
   const [rfqModalOpen, setRfqModalOpen] = useState(false);
   const [rfqInitialData, setRfqInitialData] = useState({});
 
@@ -48,7 +46,7 @@ const Home = () => {
         <AboutSection />
 
         {/* 6. Product Focus: Foundry Metallurgy, Chemicals, Raw Materials */}
-        <ProductFocus onOpenSpecModal={(prodId) => setSpecModalProduct(prodId)} />
+        <ProductFocus onOpenSpecModal={(prodId) => handleOpenRfq({ product: 'Graphitized Petroleum Coke (GPC)' })} />
 
         {/* 7. Core Services: 6-Pillar Detailed Grid */}
         <ServicesGrid />
@@ -75,14 +73,7 @@ const Home = () => {
       {/* 14. Complete Footer */}
       <Footer />
 
-      {/* Interactive Modals */}
-      {specModalProduct && (
-        <ProductSpecModal
-          productId={specModalProduct}
-          onClose={() => setSpecModalProduct(null)}
-          onOpenRfq={handleOpenRfq}
-        />
-      )}
+
 
       <RfqModal
         isOpen={rfqModalOpen}

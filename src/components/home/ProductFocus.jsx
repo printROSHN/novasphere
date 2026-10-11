@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Sparkles, Layers, ShieldCheck, FileSpreadsheet } from 'lucide-react';
+import { ArrowRight, Sparkles, Layers, ShieldCheck, FileSpreadsheet, Send } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
+import { CATEGORY_IMAGE_POOL } from '../../data/products';
 
 const ProductFocus = ({ onOpenSpecModal }) => {
   const { products } = useContent();
@@ -32,25 +33,30 @@ const ProductFocus = ({ onOpenSpecModal }) => {
           </Link>
         </div>
 
-        {/* 3 Structured Category Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {products.map((category) => {
+        {/* Dynamic Centered Category Cards */}
+        <div className="flex flex-wrap justify-center gap-8">
+          {products.map((category, idx) => {
             const isFlagship = category.flagship;
+            const imgSrc = category.image || CATEGORY_IMAGE_POOL[idx % CATEGORY_IMAGE_POOL.length];
 
             return (
               <div
                 key={category.id}
-                className={`relative rounded-xl overflow-hidden border transition-all duration-300 flex flex-col justify-between group ${
+                className={`relative rounded-xl overflow-hidden border transition-all duration-300 flex flex-col justify-between group w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.34rem)] max-w-md ${
                   isFlagship
                     ? 'border-brand-gold/60 shadow-xl ring-2 ring-brand-gold/20 bg-brand-dark text-white'
                     : 'border-slate-200 shadow-md hover:shadow-xl bg-brand-dark text-white'
                 }`}
               >
                 {/* Top Image Banner */}
-                <div className="relative h-56 sm:h-64 overflow-hidden">
+                <div className="relative h-56 sm:h-64 overflow-hidden bg-slate-900">
                   <img
-                    src={category.image}
+                    src={imgSrc}
                     alt={category.name}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = CATEGORY_IMAGE_POOL[idx % CATEGORY_IMAGE_POOL.length];
+                    }}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent" />
@@ -109,8 +115,8 @@ const ProductFocus = ({ onOpenSpecModal }) => {
                         onClick={() => onOpenSpecModal && onOpenSpecModal('gpc-graphitized-petroleum-coke')}
                         className="btn-gold w-full text-xs py-2.5"
                       >
-                        <FileSpreadsheet className="w-3.5 h-3.5" />
-                        <span>Request Technical Specs</span>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Request Commercial Quote</span>
                       </button>
                     ) : (
                       <Link

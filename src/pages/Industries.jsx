@@ -55,14 +55,14 @@ const Industries = () => {
         {/* Sectors Grid */}
         <section className="py-16 sm:py-20 bg-surface-light">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="flex flex-wrap justify-center gap-6">
               {industries.map((ind) => {
                 const IconComponent = iconMap[ind.icon] || Factory;
 
                 return (
                   <div
                     key={ind.id}
-                    className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                    className="bg-white rounded-xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group w-full md:w-[calc(50%-0.75rem)] lg:w-[calc(25%-1.125rem)] max-w-sm"
                   >
                     <div>
                       <div className="w-12 h-12 rounded-lg bg-brand-navy text-brand-gold flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">

@@ -5,7 +5,7 @@ export const productCategories = [
     flagship: true,
     tagline: "High-Purity Carbon Materials & Metallurgy Additives",
     description: "Premium recarburizers, carbon additives, and foundry inputs engineered for precise carbon recovery, low impurities, and optimal molten metal chemistry in iron and steel casting.",
-    image: "https://images.unsplash.com/photo-1504917599217-d4dc5ebe6122?w=1200&auto=format&fit=crop&q=80",
+    image: "/assets/categories/foundry-metallurgy.jpg",
     bullets: ["Carbon Raisers", "Graphite Granules", "Foundry Coke", "Ferro Alloys", "More"],
     products: [
       {
@@ -121,7 +121,7 @@ export const productCategories = [
     flagship: false,
     tagline: "High-Grade Inorganic & Specialty Chemical Intermediates",
     description: "Sourcing and supply of essential chemical additives, fillers, and polymer compounding inputs for manufacturing across automotive, rubber, plastics, and construction sectors.",
-    image: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=1200&auto=format&fit=crop&q=80",
+    image: "/assets/categories/industrial-chemicals.jpg",
     bullets: ["Rubber Chemicals", "Calcium Carbonate", "Industrial Additives", "Specialty Chemicals"],
     products: [
       {
@@ -179,7 +179,7 @@ export const productCategories = [
     flagship: false,
     tagline: "Minerals, Industrial Powders & Manufacturing Inputs",
     description: "Reliable bulk procurement and cross-border delivery of industrial minerals, refractory clays, and carbon-based manufacturing inputs for core production facilities.",
-    image: "https://images.unsplash.com/photo-1578328819058-b69f3a3b0f6b?w=1200&auto=format&fit=crop&q=80",
+    image: "/assets/categories/industrial-minerals.jpg",
     bullets: ["Minerals", "Industrial Powders", "Carbon Materials", "Manufacturing Inputs"],
     products: [
       {
@@ -215,4 +215,20 @@ export const productCategories = [
       }
     ]
   }
+];
+
+export const CATEGORY_IMAGE_POOL = [
+  "/assets/categories/foundry-metallurgy.jpg",
+  "/assets/categories/industrial-chemicals.jpg",
+  "/assets/categories/industrial-minerals.jpg",
+  "/assets/categories/extra-1.jpg",
+  "/assets/categories/extra-2.jpg",
+  "/assets/categories/extra-3.jpg",
+  "/assets/categories/extra-4.jpg",
+  "/assets/categories/extra-5.jpg",
+  "/assets/categories/extra-6.jpg",
+  "/assets/categories/extra-7.jpg",
+  "/assets/categories/extra-8.jpg",
+  "/assets/categories/extra-9.jpg",
+  "/assets/categories/extra-10.jpg"
 ];

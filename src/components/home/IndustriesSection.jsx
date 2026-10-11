@@ -32,15 +32,15 @@ const IndustriesSection = () => {
           </p>
         </div>
 
-        {/* 8 Clean Linear Icon Boxes matching mockup */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3 sm:gap-4">
+        {/* Dynamic Centered Linear Icon Boxes */}
+        <div className="flex flex-wrap justify-center items-stretch gap-3 sm:gap-4">
           {industries.map((ind) => {
             const IconComponent = iconMap[ind.icon] || Factory;
 
             return (
               <div
                 key={ind.id}
-                className="group p-4 rounded-lg bg-brand-navy/60 hover:bg-brand-navy border border-slate-800 hover:border-brand-gold/50 transition-all duration-200 text-center flex flex-col items-center justify-center min-h-[120px] cursor-pointer"
+                className="group p-4 rounded-lg bg-brand-navy/60 hover:bg-brand-navy border border-slate-800 hover:border-brand-gold/50 transition-all duration-200 text-center flex flex-col items-center justify-center min-h-[120px] cursor-pointer w-[calc(50%-0.5rem)] sm:w-[calc(25%-0.75rem)] lg:w-[136px] flex-shrink-0"
               >
                 <div className="w-10 h-10 rounded-full flex items-center justify-center text-slate-300 group-hover:text-brand-gold group-hover:scale-110 transition-all duration-200 mb-2">
                   <IconComponent className="w-6 h-6 stroke-[1.5]" />

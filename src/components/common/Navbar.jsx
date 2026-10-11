@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, ArrowRight, ShieldCheck } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
@@ -11,6 +11,9 @@ const Navbar = ({ onOpenRfq }) => {
   const location = useLocation();
   const { services, products } = useContent();
 
+  const productsRef = useRef(null);
+  const servicesRef = useRef(null);
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -19,7 +22,21 @@ const Navbar = ({ onOpenRfq }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close mobile drawer on route change
+  // Close menus on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (productsRef.current && !productsRef.current.contains(event.target)) {
+        setProductsOpen(false);
+      }
+      if (servicesRef.current && !servicesRef.current.contains(event.target)) {
+        setServicesOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Close mobile drawer and dropdowns on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setProductsOpen(false);
@@ -31,6 +48,14 @@ const Navbar = ({ onOpenRfq }) => {
     return location.pathname.startsWith(path);
   };
 
+  const navLinkClass = (path) => `
+    inline-flex items-center text-[13px] 2xl:text-sm font-semibold tracking-normal transition-colors duration-200 py-1 whitespace-nowrap
+    ${isActive(path) && (path !== '/' || location.pathname === '/')
+      ? 'text-brand-gold font-bold'
+      : 'text-slate-700 hover:text-brand-navy'
+    }
+  `;
+
   return (
     <header
       className={`sticky top-0 z-40 w-full transition-all duration-300 ${
@@ -40,197 +65,198 @@ const Navbar = ({ onOpenRfq }) => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group focus:outline-none">
+        <div className="flex items-center justify-between h-20 lg:h-24">
+          {/* Logo - Increased size per requirement */}
+          <Link to="/" className="flex items-center py-2 group focus:outline-none flex-shrink-0">
             <img
               src="/assets/logo.png"
               alt="NovaSphere Exim - Expanding Trade Globally"
-              className="h-12 sm:h-14 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+              className="h-14 sm:h-16 lg:h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
             />
           </Link>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden xl:flex items-center gap-6">
-            <Link
-              to="/"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/') && location.pathname === '/'
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
-              Home
-            </Link>
+          {/* Desktop Navigation + CTAs Grouped Container */}
+          <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
+            <nav className="flex items-center gap-4 2xl:gap-5">
+              <Link to="/" className={navLinkClass('/')}>
+                Home
+              </Link>
 
-            <Link
-              to="/about"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/about')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
+            <Link to="/about" className={navLinkClass('/about')}>
               About Us
             </Link>
 
-            {/* Products Dropdown */}
+            {/* Products Dropdown - Clickable and hoverable with seamless cursor bridge */}
             <div
-              className="relative"
+              ref={productsRef}
+              className="relative py-2"
               onMouseEnter={() => setProductsOpen(true)}
               onMouseLeave={() => setProductsOpen(false)}
             >
-              <Link
-                to="/products"
-                className={`flex items-center gap-1 text-sm font-semibold transition-colors duration-200 ${
-                  isActive('/products')
-                    ? 'text-brand-gold font-bold'
-                    : 'text-slate-700 hover:text-brand-navy'
-                }`}
-              >
-                <span>Products</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${productsOpen ? 'rotate-180 text-brand-gold' : ''}`} />
-              </Link>
+              <div className="inline-flex items-center">
+                <Link
+                  to="/products"
+                  className={navLinkClass('/products')}
+                  onClick={() => setProductsOpen(false)}
+                >
+                  <span>Products</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setProductsOpen(!productsOpen);
+                  }}
+                  className="p-1 text-slate-500 hover:text-brand-gold focus:outline-none"
+                  aria-label="Toggle Products Menu"
+                  aria-expanded={productsOpen}
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      productsOpen ? 'rotate-180 text-brand-gold' : ''
+                    }`}
+                  />
+                </button>
+              </div>
 
+              {/* Dropdown Menu with zero gap bridge via padding */}
               {productsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-slate-200/80 py-2 animate-fade-in z-50">
-                  <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Core Product Lines
-                  </div>
-                  {products.map((cat) => (
-                    <Link
-                      key={cat.id}
-                      to={`/products#${cat.id}`}
-                      className="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-gold transition-colors"
-                    >
-                      <div className="font-semibold text-slate-900">{cat.name}</div>
-                      <div className="text-[11px] text-slate-500 truncate">{cat.bullets.slice(0, 3).join(' • ')}</div>
-                    </Link>
-                  ))}
-                  <div className="border-t border-slate-100 mt-1 pt-1">
-                    <Link
-                      to="/products"
-                      className="flex items-center justify-between px-4 py-2 text-xs font-bold text-brand-navy hover:text-brand-gold"
-                    >
-                      <span>View All Products</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
+                <div className="absolute top-full left-0 pt-2 w-72 animate-fade-in z-50">
+                  <div className="bg-white rounded-lg shadow-xl border border-slate-200/80 py-2">
+                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      Core Product Lines
+                    </div>
+                    {products.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        to={`/products#${cat.id}`}
+                        onClick={() => setProductsOpen(false)}
+                        className="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-gold transition-colors"
+                      >
+                        <div className="font-semibold text-slate-900">{cat.name}</div>
+                        <div className="text-[11px] text-slate-500 truncate">
+                          {cat.bullets ? cat.bullets.slice(0, 3).join(' • ') : ''}
+                        </div>
+                      </Link>
+                    ))}
+                    <div className="border-t border-slate-100 mt-1 pt-1">
+                      <Link
+                        to="/products"
+                        onClick={() => setProductsOpen(false)}
+                        className="flex items-center justify-between px-4 py-2 text-xs font-bold text-brand-navy hover:text-brand-gold"
+                      >
+                        <span>View All Products</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
                   </div>
                 </div>
               )}
             </div>
 
-            {/* Services Dropdown */}
+            {/* Services Dropdown - Clickable and hoverable with seamless cursor bridge */}
             <div
-              className="relative"
+              ref={servicesRef}
+              className="relative py-2"
               onMouseEnter={() => setServicesOpen(true)}
               onMouseLeave={() => setServicesOpen(false)}
             >
-              <Link
-                to="/services"
-                className={`flex items-center gap-1 text-sm font-semibold transition-colors duration-200 ${
-                  isActive('/services')
-                    ? 'text-brand-gold font-bold'
-                    : 'text-slate-700 hover:text-brand-navy'
-                }`}
-              >
-                <span>Services</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${servicesOpen ? 'rotate-180 text-brand-gold' : ''}`} />
-              </Link>
+              <div className="inline-flex items-center">
+                <Link
+                  to="/services"
+                  className={navLinkClass('/services')}
+                  onClick={() => setServicesOpen(false)}
+                >
+                  <span>Services</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setServicesOpen(!servicesOpen);
+                  }}
+                  className="p-1 text-slate-500 hover:text-brand-gold focus:outline-none"
+                  aria-label="Toggle Services Menu"
+                  aria-expanded={servicesOpen}
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                      servicesOpen ? 'rotate-180 text-brand-gold' : ''
+                    }`}
+                  />
+                </button>
+              </div>
 
+              {/* Dropdown Menu with zero gap bridge via padding */}
               {servicesOpen && (
-                <div className="absolute top-full left-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-200/80 py-2 animate-fade-in z-50">
-                  <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                    Our 6 Integrated Capabilities
+                <div className="absolute top-full left-0 pt-2 w-80 animate-fade-in z-50">
+                  <div className="bg-white rounded-lg shadow-xl border border-slate-200/80 py-2">
+                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                      Our 6 Integrated Capabilities
+                    </div>
+                    {services.map((service) => (
+                      <Link
+                        key={service.id}
+                        to={`/services#${service.id}`}
+                        onClick={() => setServicesOpen(false)}
+                        className="flex items-start gap-2.5 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-navy transition-colors"
+                      >
+                        <span className="font-bold text-brand-gold text-[11px] mt-0.5">
+                          {service.number}
+                        </span>
+                        <div>
+                          <div className="font-semibold text-slate-900">{service.title}</div>
+                          <div className="text-[11px] text-slate-500 line-clamp-1">
+                            {service.shortDesc}
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                  {services.map((service) => (
-                    <Link
-                      key={service.id}
-                      to={`/services#${service.id}`}
-                      className="flex items-start gap-2.5 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-navy transition-colors"
-                    >
-                      <span className="font-bold text-brand-gold text-[11px] mt-0.5">{service.number}</span>
-                      <div>
-                        <div className="font-semibold text-slate-900">{service.title}</div>
-                        <div className="text-[11px] text-slate-500 line-clamp-1">{service.shortDesc}</div>
-                      </div>
-                    </Link>
-                  ))}
                 </div>
               )}
             </div>
 
-            <Link
-              to="/industries"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/industries')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
+            <Link to="/industries" className={navLinkClass('/industries')}>
               Industries
             </Link>
 
-            <Link
-              to="/global-markets"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/global-markets')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
+            <Link to="/global-markets" className={navLinkClass('/global-markets')}>
               Global Markets
             </Link>
 
-            <Link
-              to="/for-manufacturers"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/for-manufacturers')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
+            <Link to="/for-manufacturers" className={navLinkClass('/for-manufacturers')}>
               For Manufacturers
             </Link>
 
-            <Link
-              to="/for-buyers"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/for-buyers')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
+            <Link to="/for-buyers" className={navLinkClass('/for-buyers')}>
               For Buyers
             </Link>
 
-            <Link
-              to="/contact"
-              className={`text-sm font-semibold transition-colors duration-200 ${
-                isActive('/contact')
-                  ? 'text-brand-gold font-bold'
-                  : 'text-slate-700 hover:text-brand-navy'
-              }`}
-            >
-              Contact
-            </Link>
-          </nav>
+              <Link to="/contact" className={navLinkClass('/contact')}>
+                Contact
+              </Link>
+            </nav>
 
-          {/* Desktop CTAs */}
-          <div className="hidden lg:flex items-center gap-3">
-            <Link
-              to="/for-manufacturers"
-              className="btn-outline-navy text-xs px-4 py-2"
-            >
-              Partner With Us
-            </Link>
+            {/* Clean Vertical Divider between Navigation and CTAs */}
+            <div className="h-5 w-px bg-slate-200" aria-hidden="true" />
 
-            <button
-              onClick={() => onOpenRfq ? onOpenRfq() : window.location.assign('/contact')}
-              className="btn-gold text-xs px-4 py-2"
-            >
-              Send an Enquiry
-            </button>
+            {/* Desktop CTAs with tight, consistent spacing */}
+            <div className="flex items-center gap-2.5 2xl:gap-3 flex-shrink-0">
+              <Link
+                to="/for-manufacturers"
+                className="btn-outline-navy text-xs px-3.5 py-2 font-semibold whitespace-nowrap"
+              >
+                Partner With Us
+              </Link>
+
+              <button
+                onClick={() => onOpenRfq ? onOpenRfq() : window.location.assign('/contact')}
+                className="btn-gold text-xs px-3.5 py-2 font-semibold whitespace-nowrap"
+              >
+                Send an Enquiry
+              </button>
+            </div>
           </div>
 
           {/* Mobile Menu Button */}

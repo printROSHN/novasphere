@@ -99,7 +99,7 @@ export default function AdminDashboard() {
           <div>
             <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Core Services</p>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mt-1">{services.length}</h3>
-            <p className="text-[11px] text-slate-500 mt-1">Including Retainer+Commission</p>
+            <p className="text-[11px] text-slate-500 mt-1">Strategic Partnership Model</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
             <Briefcase className="w-6 h-6" />

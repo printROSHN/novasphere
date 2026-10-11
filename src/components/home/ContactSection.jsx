@@ -1,11 +1,26 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, Globe2, AlertCircle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { Mail, Phone, MapPin, Send, CheckCircle2, Clock, Globe2, AlertCircle, MessageCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useContent } from '../../contexts/ContentContext';
-import { submitInquiry, generateMailtoLink } from '../../lib/inquiryService';
+import { submitInquiry, generateMailtoLink, generateWhatsAppLink } from '../../lib/inquiryService';
 
 const ContactSection = () => {
-  const { company, addInquiry } = useContent();
+  const { company, addInquiry, products } = useContent();
+
+  // Build product options dynamically from products context (strictly identical to products catalog)
+  const productOptions = useMemo(() => {
+    const opts = [];
+    if (products && products.length > 0) {
+      products.forEach(cat => {
+        (cat.products || []).forEach(prod => {
+          if (prod && prod.name && !opts.some(o => o.value === prod.name)) {
+            opts.push({ value: prod.name, label: prod.name + (prod.featured ? ' — Flagship' : '') });
+          }
+        });
+      });
+    }
+    return opts;
+  }, [products]);
 
   const [formData, setFormData] = useState({
     fullName: '',
@@ -14,7 +29,7 @@ const ContactSection = () => {
     phone: '',
     country: 'India',
     inquiryType: 'Buyer looking for products',
-    productInterest: 'Graphitized Petroleum Coke (GPC)',
+    productInterest: productOptions[0]?.value || 'General',
     message: ''
   });
 
@@ -25,11 +40,14 @@ const ContactSection = () => {
   const validate = () => {
     const errs = {};
     if (!formData.fullName.trim()) errs.fullName = 'Full Name is required';
+    if (!formData.companyName.trim()) errs.companyName = 'Company Name is required';
     if (!formData.email.trim()) {
       errs.email = 'Email address is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errs.email = 'Please provide a valid work email';
     }
+    if (!formData.phone.trim()) errs.phone = 'Phone number is required';
+    if (!formData.country.trim()) errs.country = 'Country is required';
     if (!formData.message.trim() || formData.message.trim().length < 10) {
       errs.message = 'Please provide at least 10 characters describing your requirement';
     }
@@ -84,7 +102,7 @@ const ContactSection = () => {
         phone: '',
         country: 'India',
         inquiryType: 'Buyer looking for products',
-        productInterest: 'Graphitized Petroleum Coke (GPC)',
+        productInterest: productOptions[0]?.value || 'General',
         message: ''
       });
     } catch (err) {
@@ -134,9 +152,6 @@ const ContactSection = () => {
                   <a href={`mailto:${company.email}`} className="text-sm font-semibold text-brand-navy hover:text-brand-gold transition-colors block">
                     {company.email}
                   </a>
-                  <a href={`mailto:${company.secondaryEmail}`} className="text-xs text-slate-500 hover:text-brand-gold transition-colors">
-                    {company.secondaryEmail}
-                  </a>
                 </div>
               </div>
 
@@ -173,7 +188,7 @@ const ContactSection = () => {
                 Commercial Inquiry / Request for Quotation (RFQ)
               </h3>
               <p className="text-xs text-slate-500 mb-6">
-                Fill in your details below. For custom mesh sizes or chemical specs, please mention them in the requirements box.
+                Fill in your details below. All fields are required. For custom mesh sizes or chemical specs, please mention them in the requirements box.
               </p>
 
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -186,6 +201,7 @@ const ContactSection = () => {
                     <input
                       type="text"
                       name="fullName"
+                      required
                       value={formData.fullName}
                       onChange={handleChange}
                       placeholder="e.g. John Doe / Rajesh Sharma"
@@ -199,16 +215,20 @@ const ContactSection = () => {
                   {/* Company Name */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Company / Organization Name
+                      Company / Organization Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="companyName"
+                      required
                       value={formData.companyName}
                       onChange={handleChange}
                       placeholder="e.g. Acme Metallurgy Ltd."
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
+                        errors.companyName ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
+                      }`}
                     />
+                    {errors.companyName && <p className="text-[11px] text-red-500 mt-1">{errors.companyName}</p>}
                   </div>
                 </div>
 
@@ -221,6 +241,7 @@ const ContactSection = () => {
                     <input
                       type="email"
                       name="email"
+                      required
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="name@company.com"
@@ -234,16 +255,20 @@ const ContactSection = () => {
                   {/* Phone / WhatsApp */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Phone / WhatsApp Number
+                      Phone / WhatsApp Number <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
                       name="phone"
+                      required
                       value={formData.phone}
                       onChange={handleChange}
                       placeholder="+91 98765 43210"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
+                        errors.phone ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
+                      }`}
                     />
+                    {errors.phone && <p className="text-[11px] text-red-500 mt-1">{errors.phone}</p>}
                   </div>
                 </div>
 
@@ -251,25 +276,30 @@ const ContactSection = () => {
                   {/* Country */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Country / Region
+                      Country / Region <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="country"
+                      required
                       value={formData.country}
                       onChange={handleChange}
                       placeholder="e.g. India, UAE, Italy"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
+                      className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
+                        errors.country ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
+                      }`}
                     />
+                    {errors.country && <p className="text-[11px] text-red-500 mt-1">{errors.country}</p>}
                   </div>
 
                   {/* Inquirer Type */}
                   <div>
                     <label className="block text-xs font-bold text-slate-700 mb-1">
-                      I am a:
+                      I am a: <span className="text-red-500">*</span>
                     </label>
                     <select
                       name="inquiryType"
+                      required
                       value={formData.inquiryType}
                       onChange={handleChange}
                       className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
@@ -281,28 +311,21 @@ const ContactSection = () => {
                   </div>
                 </div>
 
-                {/* Product of Interest */}
+                {/* Product of Interest — Dynamic from products context */}
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Product / Capability of Interest
+                    Product / Capability of Interest <span className="text-red-500">*</span>
                   </label>
                   <select
                     name="productInterest"
+                    required
                     value={formData.productInterest}
                     onChange={handleChange}
                     className="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold"
                   >
-                    <option value="Graphitized Petroleum Coke (GPC)">Graphitized Petroleum Coke (GPC) — Flagship</option>
-                    <option value="Carbon Raiser / Recarburizer (CR95)">Carbon Raiser / Recarburizer (CR95)</option>
-                    <option value="Graphite Granules">Graphite Granules</option>
-                    <option value="Foundry Coke">Foundry Coke</option>
-                    <option value="Ferro Alloys">Ferro Alloys</option>
-                    <option value="Rubber Chemicals">Rubber Chemicals</option>
-                    <option value="Calcium Carbonate (PCC/GCC)">Calcium Carbonate (PCC/GCC)</option>
-                    <option value="Industrial Raw Materials & Minerals">Industrial Raw Materials & Minerals</option>
-                    <option value="India Market Entry & Representation">India Market Entry & Representation (Retainer+Commission)</option>
-                    <option value="Global Sourcing Solutions">Global Sourcing Solutions</option>
-                    <option value="Other">Other Custom Requirement</option>
+                    {productOptions.map((opt, idx) => (
+                      <option key={idx} value={opt.value}>{opt.label}</option>
+                    ))}
                   </select>
                 </div>
 
@@ -314,6 +337,7 @@ const ContactSection = () => {
                   <textarea
                     rows={4}
                     name="message"
+                    required
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Describe required grades, mesh size (e.g. 1-5mm), volume (e.g. 50 MT), delivery port (e.g. CIF Nhava Sheva), or representation scope..."
@@ -339,12 +363,24 @@ const ContactSection = () => {
                   </button>
 
                   {submittedData && (
-                    <a
-                      href={generateMailtoLink(submittedData)}
-                      className="text-xs text-brand-navy hover:text-brand-gold font-medium underline flex items-center gap-1"
-                    >
-                      <span>Also open in email client</span>
-                    </a>
+                    <div className="flex items-center gap-3 pt-1">
+                      <a
+                        href={generateWhatsAppLink(submittedData)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-gold text-xs px-3 py-2 flex items-center gap-1.5"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>WhatsApp Trade Desk</span>
+                      </a>
+                      <a
+                        href={generateMailtoLink(submittedData)}
+                        className="text-xs text-brand-navy hover:text-brand-gold font-medium underline flex items-center gap-1"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Open in email client</span>
+                      </a>
+                    </div>
                   )}
                 </div>
               </form>
