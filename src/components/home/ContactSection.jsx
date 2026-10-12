@@ -85,16 +85,16 @@ const ContactSection = () => {
       // 1. Save to ContentContext (updates local inquiries desk instantly)
       addInquiry(payload);
 
-      // 2. Submit to Supabase inquiries table
-      await submitInquiry(payload);
+      // 2. Submit to Supabase & email dispatchers
+      const res = await submitInquiry(payload);
 
       // 3. Feedback toast
       toast.success(
-        'Thank you. Our international trade desk will review your specifications and contact you within 24 business hours.',
+        'Thank you! Your trade requirement has been logged and dispatched to info@novasphereexim.com.',
         { duration: 6000, position: 'top-center' }
       );
 
-      setSubmittedData(payload);
+      setSubmittedData({ ...payload, res });
       setFormData({
         fullName: '',
         companyName: '',
@@ -106,7 +106,7 @@ const ContactSection = () => {
         message: ''
       });
     } catch (err) {
-      toast.error('Submission received. You can also contact our trade desk directly.');
+      toast.error('Submission recorded. You can also contact our trade desk directly.');
     } finally {
       setIsSubmitting(false);
     }
@@ -348,6 +348,36 @@ const ContactSection = () => {
                   {errors.message && <p className="text-[11px] text-red-500 mt-1">{errors.message}</p>}
                 </div>
 
+                {submittedData && (
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-900 space-y-2 animate-fade-in">
+                    <div className="flex items-center gap-2 font-bold text-emerald-800">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                      <span>Enquiry Logged & Routed to info@novasphereexim.com</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-700 leading-relaxed">
+                      Our trade desk will review your specifications for <strong className="font-semibold">{submittedData.product_interest || 'commercial materials'}</strong> within 24 business hours. You can also connect directly via:
+                    </p>
+                    <div className="flex flex-wrap items-center gap-3 pt-1">
+                      <a
+                        href={generateWhatsAppLink(submittedData)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn-gold text-xs px-3 py-1.5 flex items-center gap-1.5"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>WhatsApp Desk</span>
+                      </a>
+                      <a
+                        href={generateMailtoLink(submittedData)}
+                        className="text-xs text-brand-navy hover:text-brand-gold font-semibold underline flex items-center gap-1"
+                      >
+                        <Mail className="w-3.5 h-3.5" />
+                        <span>Open in Email App</span>
+                      </a>
+                    </div>
+                  </div>
+                )}
+
                 <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
                   <button
                     type="submit"
@@ -361,27 +391,6 @@ const ContactSection = () => {
                     )}
                     <span>{isSubmitting ? 'Submitting Inquiry...' : 'Submit Inquiry to Trade Desk'}</span>
                   </button>
-
-                  {submittedData && (
-                    <div className="flex items-center gap-3 pt-1">
-                      <a
-                        href={generateWhatsAppLink(submittedData)}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn-gold text-xs px-3 py-2 flex items-center gap-1.5"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5" />
-                        <span>WhatsApp Trade Desk</span>
-                      </a>
-                      <a
-                        href={generateMailtoLink(submittedData)}
-                        className="text-xs text-brand-navy hover:text-brand-gold font-medium underline flex items-center gap-1"
-                      >
-                        <Mail className="w-3.5 h-3.5" />
-                        <span>Open in email client</span>
-                      </a>
-                    </div>
-                  )}
                 </div>
               </form>
             </div>

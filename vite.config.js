@@ -94,9 +94,51 @@ const saveTranslationPlugin = () => {
   };
 };
 
+// Custom plugin to handle /api/inquiry during local development
+const inquiryDevPlugin = () => {
+  return {
+    name: 'inquiry-dev-plugin',
+    configureServer(server) {
+      server.middlewares.use('/api/inquiry', async (req, res) => {
+        try {
+          const inquiryModule = await server.ssrLoadModule('./api/inquiry.js');
+          const handler = inquiryModule.default || inquiryModule;
+
+          let body = '';
+          req.on('data', chunk => { body += chunk.toString(); });
+          req.on('end', async () => {
+            try {
+              req.body = body ? JSON.parse(body) : {};
+            } catch (e) {
+              req.body = body;
+            }
+
+            res.status = (statusCode) => {
+              res.statusCode = statusCode;
+              return res;
+            };
+            res.json = (data) => {
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(data));
+              return res;
+            };
+
+            await handler(req, res);
+          });
+        } catch (err) {
+          console.error('Dev inquiry handler error:', err);
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: err.message }));
+        }
+      });
+    }
+  };
+};
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), saveTranslationPlugin()],
+  plugins: [react(), saveTranslationPlugin(), inquiryDevPlugin()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

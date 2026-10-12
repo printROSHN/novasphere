@@ -170,7 +170,7 @@ export const ContentProvider = ({ children }) => {
         const { data, error } = await supabase
           .from('inquiries')
           .select('*')
-          .order('created_at', { ascending: false });
+          .order('updated_at', { ascending: false });
 
         if (!error && data && data.length > 0) {
           // Merge remote with local without duplicating
@@ -186,7 +186,7 @@ export const ContentProvider = ({ children }) => {
               product_interest: item.product_interest || item.subject || '',
               message: item.message || '',
               status: item.status || 'new',
-              created_at: item.created_at || new Date().toISOString()
+              created_at: item.created_at || item.updated_at || new Date().toISOString()
             }));
             return remoteMapped;
           });

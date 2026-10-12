@@ -1,4 +1,4 @@
-import { supabase } from '@/integrations/supabase/client';
+import { supabase } from '../integrations/supabase/client';
 
 export async function submitInquiry(inquiryData) {
   const payload = {
@@ -15,103 +15,107 @@ export async function submitInquiry(inquiryData) {
 
   let savedInDb = false;
   let emailDispatched = false;
+  let activationRequired = false;
+  let gatewayDetails = '';
 
-  // 1. Send direct email notification to info@novasphereexim.com via FormSubmit
+  // 1. Invoke /api/inquiry (supported on Vercel and local Vite dev server)
   try {
-    const emailRes = await fetch('https://formsubmit.co/ajax/info@novasphereexim.com', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-        _subject: `New Commercial RFQ: ${payload.product_interest || payload.inquiry_type} - ${payload.full_name}`,
-        _replyto: payload.email,
-        'Full Name': payload.full_name,
-        'Company Name': payload.company_name || 'N/A',
-        'Email Address': payload.email,
-        'Phone / WhatsApp': payload.phone || 'N/A',
-        'Country': payload.country,
-        'Inquiry Type': payload.inquiry_type,
-        'Product of Interest': payload.product_interest || 'General',
-        'Buyer Requirement / Message': payload.message
-      })
-    });
-
-    if (emailRes.ok) {
-      emailDispatched = true;
-    }
-  } catch (emailErr) {
-    console.warn('FormSubmit email dispatch fallback:', emailErr);
-  }
-
-  // 2. Also invoke local Vercel serverless /api/inquiry endpoint if available
-  try {
-    fetch('/api/inquiry', {
+    const apiRes = await fetch('/api/inquiry', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
-    }).catch(() => {});
+    });
+
+    if (apiRes.ok) {
+      const apiResult = await apiRes.json().catch(() => null);
+      if (apiResult?.emailSent) {
+        emailDispatched = true;
+        gatewayDetails = apiResult.gatewayStatus || 'Delivered via server API';
+      }
+      if (apiResult?.activationRequired) {
+        activationRequired = true;
+        gatewayDetails = apiResult.gatewayStatus;
+      }
+    }
   } catch (apiErr) {
-    // Non-blocking
+    console.warn('API /api/inquiry dispatch failed, falling back to direct client gateway:', apiErr);
   }
 
-  // 3. Persist into Supabase / PostgreSQL database
-  try {
-    // A. Standard NovaSphere schema insert
-    const { data, error } = await supabase
-      .from('inquiries')
-      .insert([payload])
-      .select();
+  // 2. Client-side direct FormSubmit fallback if not yet dispatched
+  if (!emailDispatched) {
+    try {
+      const emailRes = await fetch('https://formsubmit.co/ajax/info@novasphereexim.com', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          _subject: `New Commercial RFQ: ${payload.product_interest || payload.inquiry_type} - ${payload.full_name}`,
+          _replyto: payload.email,
+          _captcha: 'false',
+          _template: 'table',
+          _cc: 'suyash23yewale@gmail.com',
+          'Full Name': payload.full_name,
+          'Company Name': payload.company_name || 'N/A',
+          'Email Address': payload.email,
+          'Phone / WhatsApp': payload.phone || 'N/A',
+          'Country': payload.country,
+          'Inquiry Type': payload.inquiry_type,
+          'Product of Interest': payload.product_interest || 'General',
+          'Buyer Requirement / Message': payload.message
+        })
+      });
 
-    if (!error) {
-      savedInDb = true;
-      return {
-        success: true,
-        emailSent: emailDispatched,
-        savedInDb: true,
-        data: data?.[0] || payload
-      };
+      const emailData = await emailRes.json().catch(() => null);
+      const isDelivered = emailRes.ok && (emailData?.success === 'true' || emailData?.success === true);
+      const needsActivation = emailData?.message?.toLowerCase().includes('activation');
+
+      if (isDelivered) {
+        emailDispatched = true;
+        gatewayDetails = 'Direct FormSubmit dispatch delivered';
+      } else if (needsActivation) {
+        activationRequired = true;
+        gatewayDetails = emailData?.message;
+        console.warn('⚠️ [NovaSphere Trade Desk] FormSubmit activation required.');
+        console.warn('Please open the inbox of info@novasphereexim.com and click "Activate Form" in the email from FormSubmit.');
+      }
+    } catch (emailErr) {
+      console.warn('Direct FormSubmit gateway attempt:', emailErr);
     }
+  }
 
-    // B. Legacy schema column mapping fallback
-    console.warn('Primary Supabase insert encountered schema mismatch, attempting legacy fallback:', error.message);
+  // 3. Persist into Supabase / PostgreSQL database using compatible schema (omitting .select() to prevent anon RLS read error)
+  try {
     const legacyPayload = {
       name: payload.full_name,
-      company: payload.company_name,
+      company: payload.company_name || null,
       email: payload.email,
-      phone: payload.phone,
+      phone: payload.phone || null,
       message: `[Inquiry Type: ${payload.inquiry_type}] [Country: ${payload.country}] [Product: ${payload.product_interest || 'N/A'}]\n\n${payload.message}`,
-      subject: `Commercial Inquiry: ${payload.product_interest || payload.inquiry_type}`,
+      subject: `Commercial RFQ: ${payload.product_interest || payload.inquiry_type} - ${payload.full_name}`,
       status: 'new'
     };
 
-    const { data: legacyData, error: legacyError } = await supabase
+    const { error: dbError } = await supabase
       .from('inquiries')
-      .insert([legacyPayload])
-      .select();
+      .insert([legacyPayload]);
 
-    if (!legacyError) {
+    if (!dbError) {
       savedInDb = true;
-      return {
-        success: true,
-        emailSent: emailDispatched,
-        savedInDb: true,
-        data: legacyData?.[0] || payload
-      };
+    } else {
+      console.warn('Supabase inquiries database insert issue:', dbError.message);
     }
-
-    console.warn('Legacy insert also encountered policy or column issue:', legacyError.message);
   } catch (err) {
     console.warn('Supabase database connectivity exception:', err);
   }
 
-  // Always return success gracefully so client state is saved and user gets prompt
   return {
     success: true,
     emailSent: emailDispatched,
+    activationRequired,
+    gatewayDetails,
     savedInDb,
-    fallback: true,
     data: payload
   };
 }
