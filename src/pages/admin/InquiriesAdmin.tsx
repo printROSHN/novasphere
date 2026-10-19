@@ -67,7 +67,7 @@ export default function InquiriesAdmin() {
         <div>
           <h2 className="text-2xl font-bold text-slate-900">Trade Desk Inquiries & RFQs</h2>
           <p className="text-xs text-slate-500">
-            Review commercial purchase requirements, buyer specifications, and manufacturer partnership requests.
+            Review commercial purchase requirements, buyer specifications, and international trade inquiries.
           </p>
         </div>
         <div className="text-xs font-bold text-brand-gold bg-brand-dark px-3 py-1.5 rounded-lg shadow-sm">

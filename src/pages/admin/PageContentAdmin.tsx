@@ -84,7 +84,6 @@ export default function PageContentAdmin() {
           { id: 'hero', label: 'Hero Section' },
           { id: 'about', label: 'About Section' },
           { id: 'why', label: 'Why Choose Us' },
-          { id: 'gateways', label: 'Dual Gateways' },
           { id: 'bottomCta', label: 'Bottom Banner' }
         ].map((tab) => (
           <button

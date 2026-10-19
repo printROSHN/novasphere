@@ -60,11 +60,11 @@ const About = () => {
               </div>
 
               <div className="lg:col-span-5">
-                <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-200">
+                <div className="rounded-2xl overflow-hidden shadow-xl border border-slate-700/60 bg-brand-dark">
                   <img
-                    src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800&auto=format&fit=crop&q=80"
-                    alt="International shipping logistics at port"
-                    className="w-full h-80 object-cover"
+                    src="/assets/global-trade-globe.jpg"
+                    alt="NovaSphere Exim 3D Global Trade Hub - Mumbai connecting international business corridors"
+                    className="w-full h-80 object-cover object-center"
                   />
                   <div className="p-6 bg-brand-navy text-white space-y-2">
                     <h3 className="font-bold text-base text-brand-gold">Global Reach. Local Expertise.</h3>

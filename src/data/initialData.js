@@ -10,7 +10,7 @@ export const initialPageContent = {
     headlineStart: "Expanding Trade",
     headlineHighlight: "Globally",
     subtext: "Connecting manufacturers, suppliers and buyers across international markets. We help businesses source products, enter new markets and build long-term trade relationships through sourcing, export development and market representation.",
-    ctaPrimary: "Partner With Us",
+    ctaPrimary: "Explore Products",
     ctaSecondary: "Send an Enquiry"
   },
   quickFeatures: [
@@ -40,17 +40,17 @@ export const initialPageContent = {
     },
     {
       id: "qf-5",
-      title: "Strategic Partnership",
-      desc: "Flexible partnership models",
-      icon: "Handshake"
+      title: "Quality & Compliance",
+      desc: "Rigorous inspection & COA verification",
+      icon: "ShieldCheck"
     }
   ],
   about: {
     badge: "About NovaSphere Exim",
     headline: "Your Partner in Global Trade & Market Development",
     paragraph1: "NovaSphere Exim is an international trading and market-development company focused on connecting manufacturers, suppliers and buyers across global markets.",
-    paragraph2: "We work with businesses looking to source products, enter new markets, develop buyers and establish long-term commercial partnerships.",
-    imageOverlay: "Global Reach. Local Expertise. Stronger Partnerships.",
+    paragraph2: "We work with businesses looking to source products, enter new markets, develop buyers and establish long-term commercial relationships.",
+    imageOverlay: "Global Reach. Local Expertise. Stronger Business.",
     pillars: [
       { title: "Verified Sourcing", desc: "Rigorous quality inspection & supplier audit" },
       { title: "Regulatory Compliance", desc: "End-to-end customs, Incoterms & documentation" },
@@ -76,8 +76,8 @@ export const initialPageContent = {
       },
       {
         id: "wcu-3",
-        title: "Flexible Partnership",
-        desc: "Strategic partnership or hybrid commercial models",
+        title: "Commercial Flexibility",
+        desc: "Tailored supply contracts and commercial terms",
         icon: "Sliders"
       },
       {
@@ -112,8 +112,8 @@ export const initialPageContent = {
   },
   bottomCta: {
     headline: "Let's Build Your Next Market",
-    subtext: "Whether you are a manufacturer looking for international growth or a buyer searching for reliable suppliers, NovaSphere Exim can help connect the right opportunities.",
-    ctaPrimary: "Partner With Us",
+    subtext: "Whether you are looking for international trade expansion or reliable industrial suppliers, NovaSphere Exim connects the right commercial opportunities.",
+    ctaPrimary: "Explore Catalog",
     ctaSecondary: "Submit Your Requirement"
   }
 };
@@ -141,7 +141,7 @@ export const sampleInquiries = [
     country: "China",
     inquiry_type: "Manufacturer seeking representation",
     product_interest: "Foundry & Metallurgy",
-    message: "We are an established producer of graphitized petroleum coke and recarburizers seeking a dedicated India representative to reach Tier-1 Indian foundries on a strategic partnership model.",
+    message: "We are an established producer of graphitized petroleum coke and recarburizers seeking a dedicated India representative to reach Tier-1 Indian foundries on a commercial distribution model.",
     status: "contacted",
     created_at: new Date(Date.now() - 3600000 * 24).toISOString()
   },

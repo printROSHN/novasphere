@@ -13,7 +13,7 @@ const ForManufacturers = () => {
     <div className="min-h-screen bg-white flex flex-col">
       <SEO
         title="For Manufacturers — India Market Representation"
-        description="Expand into the high-growth Indian market with NovaSphere Exim. Turnkey local representation, buyer identification, and commercial development under flexible Strategic Partnership models."
+        description="Expand into the high-growth Indian market with NovaSphere Exim. Turnkey local representation, buyer identification, and commercial development under flexible commercial representation models."
       />
       <TopBar />
       <Navbar onOpenRfq={() => setRfqModalOpen(true)} />
@@ -85,7 +85,7 @@ const ForManufacturers = () => {
                   <div className="space-y-4">
                     <div className="p-4 rounded-lg bg-brand-dark border border-brand-gold/30 space-y-1">
                       <span className="text-xs font-bold text-brand-gold">Model 01</span>
-                      <h4 className="font-bold text-sm text-white">Strategic Partnership</h4>
+                      <h4 className="font-bold text-sm text-white">Dedicated Representation</h4>
                       <p className="text-xs text-slate-300">
                         Monthly base covering dedicated account executive, outreach, and reporting + success fee on closed purchase orders.
                       </p>

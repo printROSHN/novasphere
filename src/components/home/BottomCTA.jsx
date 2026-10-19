@@ -30,7 +30,7 @@ const BottomCTA = ({ onOpenRfq }) => {
 
           <div className="pt-6 flex flex-wrap items-center justify-center sm:justify-start gap-4">
             <Link
-              to="/for-manufacturers"
+              to="/products"
               className="btn-gold text-sm sm:text-base px-6 py-3.5 shadow-lg group"
             >
               <span>{bottomCta.ctaPrimary}</span>

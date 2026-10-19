@@ -233,7 +233,6 @@ export default function IndustriesAdmin() {
                   required
                   value={formData.name}
                   onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. Iron & Steel Manufacturing"
                   className="w-full px-3 py-2 border rounded border-slate-300 outline-none focus:ring-2 focus:ring-brand-gold text-xs"
                 />
               </div>
@@ -259,7 +258,6 @@ export default function IndustriesAdmin() {
                   rows={2}
                   value={formData.shortDesc}
                   onChange={(e) => setFormData(prev => ({ ...prev, shortDesc: e.target.value }))}
-                  placeholder="Overview of industrial applications..."
                   className="w-full px-3 py-2 border rounded border-slate-300 outline-none focus:ring-2 focus:ring-brand-gold text-xs"
                 />
               </div>
@@ -271,7 +269,6 @@ export default function IndustriesAdmin() {
                     type="text"
                     value={newProdInput}
                     onChange={(e) => setNewProdInput(e.target.value)}
-                    placeholder="e.g. Graphitized Coke"
                     className="flex-1 px-3 py-1.5 border rounded border-slate-300 outline-none text-xs"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {

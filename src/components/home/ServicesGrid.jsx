@@ -95,14 +95,14 @@ const ServicesGrid = () => {
           <div className="space-y-2 max-w-2xl">
             <span className="badge-gold">Commercial Structure</span>
             <h3 className="text-xl font-bold text-white">
-              Flexible Partnership Model: Strategic Partnership
+              Flexible Commercial Model: Dedicated Trade Representation
             </h3>
             <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
               We align our commercial compensation with your sales growth. International manufacturers gain dedicated ground execution in India without fixed foreign subsidiary overhead.
             </p>
           </div>
           <Link
-            to="/for-manufacturers"
+            to="/contact"
             className="btn-gold flex-shrink-0 text-xs px-5 py-3"
           >
             <span>Learn About Representation</span>

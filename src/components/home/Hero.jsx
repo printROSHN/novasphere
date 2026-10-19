@@ -53,7 +53,7 @@ const Hero = ({ onOpenRfq }) => {
           {/* Action CTAs */}
           <div className="pt-4 flex flex-wrap items-center gap-4">
             <a
-              href="/for-manufacturers"
+              href="/products"
               className="btn-gold text-sm sm:text-base px-6 py-3.5 shadow-lg group"
             >
               <span>{hero.ctaPrimary}</span>

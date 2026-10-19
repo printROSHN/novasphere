@@ -68,19 +68,10 @@ const Footer = () => {
                 <Link to="/products" className="hover:text-brand-gold transition-colors">Products</Link>
               </li>
               <li>
-                <Link to="/services" className="hover:text-brand-gold transition-colors">Services</Link>
-              </li>
-              <li>
                 <Link to="/industries" className="hover:text-brand-gold transition-colors">Industries</Link>
               </li>
               <li>
                 <Link to="/global-markets" className="hover:text-brand-gold transition-colors">Global Markets</Link>
-              </li>
-              <li>
-                <Link to="/for-manufacturers" className="hover:text-brand-gold transition-colors">For Manufacturers</Link>
-              </li>
-              <li>
-                <Link to="/for-buyers" className="hover:text-brand-gold transition-colors">For Buyers</Link>
               </li>
               <li>
                 <Link to="/contact" className="hover:text-brand-gold transition-colors">Contact</Link>
@@ -88,32 +79,40 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Column 3: Business & Models */}
+          {/* Column 3: Product Portfolios */}
           <div className="space-y-3">
             <h4 className="text-sm font-bold uppercase tracking-wider text-white border-l-2 border-brand-gold pl-2.5">
-              Business
+              Portfolios & Markets
             </h4>
             <ul className="space-y-2 text-xs">
               <li>
-                <Link to="/services#global-sourcing" className="hover:text-brand-gold transition-colors">Global Sourcing</Link>
-              </li>
-              <li>
-                <Link to="/services#import-export-solutions" className="hover:text-brand-gold transition-colors">Export Development</Link>
-              </li>
-              <li>
-                <Link to="/services#import-export-solutions" className="hover:text-brand-gold transition-colors">Import Solutions</Link>
-              </li>
-              <li>
-                <Link to="/services#india-market-entry" className="hover:text-brand-gold transition-colors">India Market Representation</Link>
-              </li>
-              <li>
-                <Link to="/services#retainer-commission" className="hover:text-brand-gold transition-colors font-medium text-brand-gold">
-                  Strategic Partnership Model
+                <Link to="/products#foundry-metallurgy" className="hover:text-brand-gold transition-colors">
+                  Foundry & Metallurgy (GPC)
                 </Link>
               </li>
               <li>
-                <Link to="/products#foundry-metallurgy" className="hover:text-brand-gold transition-colors">
-                  GPC & Carbon Materials
+                <Link to="/products#industrial-chemicals" className="hover:text-brand-gold transition-colors">
+                  Industrial Chemicals
+                </Link>
+              </li>
+              <li>
+                <Link to="/products#industrial-raw-materials" className="hover:text-brand-gold transition-colors">
+                  Industrial Raw Materials
+                </Link>
+              </li>
+              <li>
+                <Link to="/industries" className="hover:text-brand-gold transition-colors">
+                  Industries We Serve
+                </Link>
+              </li>
+              <li>
+                <Link to="/global-markets" className="hover:text-brand-gold transition-colors">
+                  Global Trade Corridors
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="hover:text-brand-gold transition-colors font-medium text-brand-gold">
+                  Direct Trade Desk RFQ
                 </Link>
               </li>
             </ul>

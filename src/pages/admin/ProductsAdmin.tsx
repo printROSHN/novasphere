@@ -429,7 +429,6 @@ export default function ProductsAdmin() {
                   required
                   value={categoryFormData.name}
                   onChange={(e) => setCategoryFormData(prev => ({ ...prev, name: e.target.value }))}
-                  placeholder="e.g. Rare Earth Metals & Alloys"
                   className="w-full px-3 py-2 border rounded border-slate-300 outline-none focus:ring-2 focus:ring-brand-gold"
                 />
               </div>
@@ -440,7 +439,6 @@ export default function ProductsAdmin() {
                   type="text"
                   value={categoryFormData.tagline}
                   onChange={(e) => setCategoryFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                  placeholder="e.g. Critical raw materials for high-tech manufacturing"
                   className="w-full px-3 py-2 border rounded border-slate-300 outline-none focus:ring-2 focus:ring-brand-gold"
                 />
               </div>
@@ -472,7 +470,6 @@ export default function ProductsAdmin() {
                     type="text"
                     value={newBulletInput}
                     onChange={(e) => setNewBulletInput(e.target.value)}
-                    placeholder="e.g. High Purity 99.9%"
                     className="flex-1 px-3 py-1.5 border rounded border-slate-300 outline-none text-xs"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -563,7 +560,6 @@ export default function ProductsAdmin() {
                     type="text"
                     value={productFormData.code}
                     onChange={(e) => setProductFormData(prev => ({ ...prev, code: e.target.value }))}
-                    placeholder="e.g. GPC-985"
                     className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                   />
                 </div>
@@ -577,7 +573,6 @@ export default function ProductsAdmin() {
                     required
                     value={productFormData.name}
                     onChange={(e) => setProductFormData(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="e.g. Graphitized Petroleum Coke"
                     className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                   />
                 </div>
@@ -601,7 +596,6 @@ export default function ProductsAdmin() {
                   type="text"
                   value={productFormData.tagline}
                   onChange={(e) => setProductFormData(prev => ({ ...prev, tagline: e.target.value }))}
-                  placeholder="e.g. Premium High-Carbon Foundry Recarburizer"
                   className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                 />
               </div>
@@ -613,7 +607,6 @@ export default function ProductsAdmin() {
                   required
                   value={productFormData.shortDesc}
                   onChange={(e) => setProductFormData(prev => ({ ...prev, shortDesc: e.target.value }))}
-                  placeholder="Concise overview of product capabilities..."
                   className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                 />
               </div>
@@ -624,7 +617,6 @@ export default function ProductsAdmin() {
                   rows={3}
                   value={productFormData.fullDesc}
                   onChange={(e) => setProductFormData(prev => ({ ...prev, fullDesc: e.target.value }))}
-                  placeholder="Comprehensive technical and commercial details..."
                   className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                 />
               </div>
@@ -637,7 +629,6 @@ export default function ProductsAdmin() {
                     type="text"
                     value={newApp}
                     onChange={(e) => setNewApp(e.target.value)}
-                    placeholder="e.g. Ductile Iron Foundries"
                     className="flex-1 px-3 py-1.5 rounded border border-slate-300 outline-none text-xs"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -669,7 +660,6 @@ export default function ProductsAdmin() {
                       type="text"
                       value={newSize}
                       onChange={(e) => setNewSize(e.target.value)}
-                      placeholder="e.g. 1 - 5 mm"
                       className="flex-1 px-3 py-1.5 rounded border border-slate-300 outline-none text-xs"
                       onKeyDown={(e) => {
                         if (e.key === 'Enter') {
@@ -698,7 +688,6 @@ export default function ProductsAdmin() {
                     type="text"
                     value={productFormData.packaging}
                     onChange={(e) => setProductFormData(prev => ({ ...prev, packaging: e.target.value }))}
-                    placeholder="e.g. 25kg bags, 1 MT jumbo bags"
                     className="w-full px-3 py-2 rounded border border-slate-300 outline-none text-xs focus:ring-2 focus:ring-brand-gold"
                   />
                 </div>

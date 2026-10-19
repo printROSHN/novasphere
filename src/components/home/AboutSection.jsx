@@ -57,24 +57,24 @@ const AboutSection = () => {
             </div>
           </div>
 
-          {/* Right Column: Visual Card with Business-related Cargo/Logistics image */}
+          {/* Right Column: Visual Card with 3D Globe connecting Mumbai to global business hubs */}
           <div className="lg:col-span-6">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-slate-200">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl group border border-slate-700/60 bg-brand-dark">
               <img
-                src="https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=1000&auto=format&fit=crop&q=80"
-                alt="Global Trade & Freight Logistics - NovaSphere Exim"
-                className="w-full h-[380px] sm:h-[420px] object-cover transition-transform duration-700 group-hover:scale-105"
+                src="/assets/global-trade-globe.jpg"
+                alt="NovaSphere Exim 3D Global Trade Hub - Mumbai connecting international business corridors"
+                className="w-full h-[380px] sm:h-[430px] object-cover transition-transform duration-700 group-hover:scale-105"
               />
 
               {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-brand-dark/90 via-transparent to-transparent pointer-events-none" />
 
-              {/* World map vector pattern */}
-              <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#D4A017_1px,transparent_1px)] [background-size:16px_16px]" />
-
-              {/* Card Content without play button */}
-              <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8">
+              {/* Card Content Overlay */}
+              <div className="absolute inset-0 flex flex-col justify-end p-6 sm:p-8 pointer-events-none">
                 <div className="space-y-1">
+                  <span className="badge-gold text-[10px] uppercase font-bold tracking-wider mb-1 inline-block">
+                    Navi Mumbai Global Trade Hub
+                  </span>
                   <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                     Global Reach.
                   </p>
@@ -82,7 +82,7 @@ const AboutSection = () => {
                     Local Expertise.
                   </p>
                   <p className="text-lg sm:text-xl font-medium text-slate-200">
-                    Stronger Partnerships.
+                    Direct Trade Corridors.
                   </p>
                 </div>
               </div>

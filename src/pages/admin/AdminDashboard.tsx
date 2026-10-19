@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import {
   MessageSquare,
-  Briefcase,
+  Globe,
   Layers,
   TrendingUp,
   Clock,
@@ -11,12 +11,13 @@ import {
   ArrowRight,
   ExternalLink,
   ShieldCheck,
-  Send
+  Send,
+  Factory
 } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
 
 export default function AdminDashboard() {
-  const { inquiries, services, products, company } = useContent();
+  const { inquiries, products, company } = useContent();
 
   const totalInquiries = inquiries.length;
   const newInquiries = inquiries.filter(i => i.status === 'new').length;
@@ -97,12 +98,12 @@ export default function AdminDashboard() {
 
         <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-xs flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Core Services</p>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mt-1">{services.length}</h3>
-            <p className="text-[11px] text-slate-500 mt-1">Strategic Partnership Model</p>
+            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Trade Corridors</p>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-brand-dark mt-1">7</h3>
+            <p className="text-[11px] text-slate-500 mt-1">Active Global Trade Hubs</p>
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center">
-            <Briefcase className="w-6 h-6" />
+            <Globe className="w-6 h-6" />
           </div>
         </div>
       </div>
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
         <div className="p-5 border-b border-slate-200 flex items-center justify-between">
           <div>
             <h3 className="text-base font-bold text-slate-900">Recent Commercial Inquiries & RFQs</h3>
-            <p className="text-xs text-slate-500">Incoming buyer requests, specifications, and manufacturer partnership leads</p>
+            <p className="text-xs text-slate-500">Incoming commercial requests, specifications, and trade inquiries</p>
           </div>
           <Link
             to="/admin/inquiries"
@@ -186,14 +187,14 @@ export default function AdminDashboard() {
       {/* Quick Action Shortcuts */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Link
-          to="/admin/services"
+          to="/admin/industries"
           className="bg-white p-6 rounded-xl border border-slate-200 hover:border-brand-gold shadow-xs hover:shadow-md transition-all group"
         >
           <div className="w-10 h-10 rounded-lg bg-brand-navy/5 text-brand-navy group-hover:bg-brand-navy group-hover:text-brand-gold flex items-center justify-center mb-3">
-            <Briefcase className="w-5 h-5" />
+            <Factory className="w-5 h-5" />
           </div>
-          <h4 className="text-sm font-bold text-slate-900 group-hover:text-brand-navy">Services Manager</h4>
-          <p className="text-xs text-slate-500 mt-1">Add, edit or reorder the 6 core trade capabilities and custom offerings.</p>
+          <h4 className="text-sm font-bold text-slate-900 group-hover:text-brand-navy">Industries Manager</h4>
+          <p className="text-xs text-slate-500 mt-1">Manage industrial applications, sectors served, and technical materials.</p>
         </Link>
 
         <Link

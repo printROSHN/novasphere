@@ -24,7 +24,6 @@ const AdminSidebar = ({ collapsed, onToggle }) => {
   const menuItems = [
     { title: 'Dashboard', href: '/admin', icon: LayoutDashboard },
     { title: 'Inquiries & Leads', href: '/admin/inquiries', icon: MessageSquare },
-    { title: 'Services Manager', href: '/admin/services', icon: Briefcase },
     { title: 'Products & Specs', href: '/admin/products', icon: Layers },
     { title: 'Page Content', href: '/admin/page-content', icon: FileText },
     { title: 'Company & Contact', href: '/admin/company-info', icon: Building },

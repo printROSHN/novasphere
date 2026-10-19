@@ -93,8 +93,8 @@ export const servicesData = [
 
 export const businessModels = [
   {
-    title: "Strategic Partnership",
-    badge: "Flexible Partnership Models",
+    title: "Dedicated Representation & Indenting",
+    badge: "Flexible Commercial Models",
     description: "A collaborative commercial model providing predictable dedicated representation combined with performance incentives for maximum deal closure and long-term business growth.",
     highlights: [
       "Dedicated account executive handling your regional product inquiries",

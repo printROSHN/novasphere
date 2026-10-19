@@ -123,7 +123,7 @@ const ContactSection = () => {
                 TRADE DESK & INQUIRIES
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold text-brand-dark tracking-tight">
-                Submit Your Technical Requirement or Partnership Request
+                Submit Your Technical Requirement or Commercial RFQ
               </h2>
               <p className="text-sm text-slate-600 leading-relaxed">
                 Connect directly with our international trade desk in Navi Mumbai. We provide fast specification matching, CIF/FOB pricing, and in-country representation roadmaps.
@@ -204,7 +204,6 @@ const ContactSection = () => {
                       required
                       value={formData.fullName}
                       onChange={handleChange}
-                      placeholder="e.g. John Doe / Rajesh Sharma"
                       className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         errors.fullName ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                       }`}
@@ -223,7 +222,6 @@ const ContactSection = () => {
                       required
                       value={formData.companyName}
                       onChange={handleChange}
-                      placeholder="e.g. Acme Metallurgy Ltd."
                       className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         errors.companyName ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                       }`}
@@ -244,7 +242,6 @@ const ContactSection = () => {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      placeholder="name@company.com"
                       className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         errors.email ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                       }`}
@@ -263,7 +260,6 @@ const ContactSection = () => {
                       required
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="+91 98765 43210"
                       className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         errors.phone ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                       }`}
@@ -284,7 +280,6 @@ const ContactSection = () => {
                       required
                       value={formData.country}
                       onChange={handleChange}
-                      placeholder="e.g. India, UAE, Italy"
                       className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                         errors.country ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                       }`}
@@ -340,7 +335,6 @@ const ContactSection = () => {
                     required
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Describe required grades, mesh size (e.g. 1-5mm), volume (e.g. 50 MT), delivery port (e.g. CIF Nhava Sheva), or representation scope..."
                     className={`w-full px-3.5 py-2.5 rounded-lg border text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold ${
                       errors.message ? 'border-red-400 bg-red-50/30' : 'border-slate-300 bg-white'
                     }`}

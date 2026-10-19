@@ -177,7 +177,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                 required
                 value={formData.fullName}
                 onChange={handleChange}
-                placeholder="e.g. Rajesh Sharma / John Smith"
                 className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
               />
             </div>
@@ -193,7 +192,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                   required
                   value={formData.companyName}
                   onChange={handleChange}
-                  placeholder="e.g. Apex Foundry Ltd"
                   className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
                 />
               </div>
@@ -207,7 +205,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="purchasing@company.com"
                   className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
                 />
               </div>
@@ -224,7 +221,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                   required
                   value={formData.phone}
                   onChange={handleChange}
-                  placeholder="+91 90227 82655"
                   className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
                 />
               </div>
@@ -238,7 +234,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                   required
                   value={formData.country}
                   onChange={handleChange}
-                  placeholder="e.g. India, Vietnam, UAE"
                   className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
                 />
               </div>
@@ -271,7 +266,6 @@ const RfqModal = ({ isOpen, onClose, initialData = {} }) => {
                 required
                 value={formData.message}
                 onChange={handleChange}
-                placeholder="Volume (e.g. 100 MT), delivery port (e.g. CIF Nhava Sheva), particle size, or representation proposal..."
                 className="w-full px-3 py-2 rounded border border-slate-300 bg-white text-xs focus:ring-2 focus:ring-brand-gold outline-none"
               />
             </div>

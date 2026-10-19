@@ -1,5 +1,5 @@
 import React from 'react';
-import { Globe, Ship, TrendingUp, MapPin, Handshake } from 'lucide-react';
+import { Globe, Ship, TrendingUp, MapPin, Handshake, ShieldCheck } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
 
 const iconMap = {
@@ -7,7 +7,8 @@ const iconMap = {
   Ship: Ship,
   TrendingUp: TrendingUp,
   MapPin: MapPin,
-  Handshake: Handshake
+  Handshake: Handshake,
+  ShieldCheck: ShieldCheck
 };
 
 const QuickFeatures = () => {
@@ -50,7 +51,7 @@ const QuickFeatures = () => {
 
                   {isHighlighted && (
                     <span className="mt-2 inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-brand-gold text-brand-dark">
-                      Featured Model
+                      Inspection & COA
                     </span>
                   )}
                 </div>

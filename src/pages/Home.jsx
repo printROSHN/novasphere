@@ -6,10 +6,8 @@ import Hero from '../components/home/Hero';
 import QuickFeatures from '../components/home/QuickFeatures';
 import AboutSection from '../components/home/AboutSection';
 import ProductFocus from '../components/home/ProductFocus';
-import ServicesGrid from '../components/home/ServicesGrid';
 import IndustriesSection from '../components/home/IndustriesSection';
 import GlobalMarkets from '../components/home/GlobalMarkets';
-import DualGateways from '../components/home/DualGateways';
 import WhyChooseUs from '../components/home/WhyChooseUs';
 import ContactSection from '../components/home/ContactSection';
 import BottomCTA from '../components/home/BottomCTA';
@@ -48,19 +46,13 @@ const Home = () => {
         {/* 6. Product Focus: Foundry Metallurgy, Chemicals, Raw Materials */}
         <ProductFocus onOpenSpecModal={(prodId) => handleOpenRfq({ product: 'Graphitized Petroleum Coke (GPC)' })} />
 
-        {/* 7. Core Services: 6-Pillar Detailed Grid */}
-        <ServicesGrid />
-
-        {/* 8. Industries We Serve: Dark navy linear 8-icon strip */}
+        {/* 7. Industries We Serve: Dark navy linear 8-icon strip */}
         <IndustriesSection />
 
-        {/* 9. Global Markets & Trade Corridors: Stylized World Map centered on India */}
+        {/* 8. Global Markets & Trade Corridors: Stylized World Map centered on India */}
         <GlobalMarkets />
 
-        {/* 10. Dual Audience Gateways: For Manufacturers vs For Buyers */}
-        <DualGateways onOpenRfq={handleOpenRfq} />
-
-        {/* 11. Why NovaSphere Exim? 5-column trust grid */}
+        {/* 9. Why NovaSphere Exim? 5-column trust grid */}
         <WhyChooseUs />
 
         {/* 12. Contact & RFQ Lead Submission Form */}

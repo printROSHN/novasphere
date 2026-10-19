@@ -29,11 +29,25 @@ export const ContentProvider = ({ children }) => {
             if (item.id === 'qf-2' && item.title === 'Import & Export') {
               return { ...item, title: 'Export & Import' };
             }
-            if (item.id === 'qf-5' && (item.title.includes('Retainer') || item.title.includes('Commission'))) {
-              return { ...item, title: 'Strategic Partnership', desc: 'Flexible partnership models' };
+            if (item.id === 'qf-5' && (item.title.includes('Retainer') || item.title.includes('Commission') || item.title.includes('Strategic Partnership') || item.title.includes('Partnership'))) {
+              return { ...item, title: 'Quality & Compliance', desc: 'Rigorous inspection & COA verification', icon: 'ShieldCheck' };
             }
             return item;
           });
+        }
+        if (parsed.whyChooseUs?.items) {
+          parsed.whyChooseUs.items = parsed.whyChooseUs.items.map(item => {
+            if (item.id === 'wcu-3' || item.title?.toLowerCase().includes('partnership')) {
+              return { ...item, title: 'Commercial Flexibility', desc: 'Tailored supply contracts and commercial terms', icon: 'Sliders' };
+            }
+            return item;
+          });
+        }
+        if (parsed.hero?.ctaPrimary === 'Partner With Us') {
+          parsed.hero.ctaPrimary = 'Explore Products';
+        }
+        if (parsed.bottomCta?.ctaPrimary === 'Partner With Us') {
+          parsed.bottomCta.ctaPrimary = 'Explore Catalog';
         }
         return parsed;
       }
@@ -50,8 +64,8 @@ export const ContentProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         return parsed.map(s => {
-          if (s.title && (s.title.includes('Retainer') || s.title.includes('Commission'))) {
-            return { ...s, title: 'Strategic Partnership' };
+          if (s.title && (s.title.includes('Retainer') || s.title.includes('Commission') || s.title.includes('Strategic Partnership'))) {
+            return { ...s, title: 'Contract Commercial Execution' };
           }
           return s;
         });

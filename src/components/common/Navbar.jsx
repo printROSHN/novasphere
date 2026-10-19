@@ -1,18 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Menu, X, ChevronDown, ChevronRight, ArrowRight, Phone, Mail, MapPin } from 'lucide-react';
 import { useContent } from '../../contexts/ContentContext';
 
 const Navbar = ({ onOpenRfq }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
-  const { services, products } = useContent();
+  const { products, company } = useContent();
 
   const productsRef = useRef(null);
-  const servicesRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,19 +27,28 @@ const Navbar = ({ onOpenRfq }) => {
       if (productsRef.current && !productsRef.current.contains(event.target)) {
         setProductsOpen(false);
       }
-      if (servicesRef.current && !servicesRef.current.contains(event.target)) {
-        setServicesOpen(false);
-      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  // Prevent background scroll when mobile drawer is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
+
   // Close mobile drawer and dropdowns on route change
   useEffect(() => {
     setMobileMenuOpen(false);
+    setMobileProductsOpen(false);
     setProductsOpen(false);
-    setServicesOpen(false);
   }, [location.pathname]);
 
   const isActive = (path) => {
@@ -49,7 +57,7 @@ const Navbar = ({ onOpenRfq }) => {
   };
 
   const navLinkClass = (path) => `
-    inline-flex items-center text-[13px] 2xl:text-sm font-semibold tracking-normal transition-colors duration-200 py-1 whitespace-nowrap
+    inline-flex items-center text-sm lg:text-[14px] xl:text-[15px] font-semibold tracking-normal transition-colors duration-200 py-1.5 whitespace-nowrap
     ${isActive(path) && (path !== '/' || location.pathname === '/')
       ? 'text-brand-gold font-bold'
       : 'text-slate-700 hover:text-brand-navy'
@@ -65,35 +73,34 @@ const Navbar = ({ onOpenRfq }) => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 lg:h-24">
-          {/* Logo - Increased size per requirement */}
-          <Link to="/" className="flex items-center py-2 group focus:outline-none flex-shrink-0">
+        <div className="flex items-center justify-between h-18 sm:h-20 lg:h-24">
+          {/* 1. Left: Logo */}
+          <Link to="/" className="flex items-center py-1.5 group focus:outline-none flex-shrink-0">
             <img
               src="/assets/logo.png"
               alt="NovaSphere Exim - Expanding Trade Globally"
-              className="h-14 sm:h-16 lg:h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
+              className="h-12 sm:h-14 lg:h-16 xl:h-20 w-auto object-contain transition-transform duration-200 group-hover:scale-[1.02]"
             />
           </Link>
 
-          {/* Desktop Navigation + CTAs Grouped Container */}
-          <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
-            <nav className="flex items-center gap-4 2xl:gap-5">
-              <Link to="/" className={navLinkClass('/')}>
-                Home
-              </Link>
+          {/* 2. Center: Desktop Navigation Tabs */}
+          <nav className="hidden lg:flex items-center justify-center gap-5 xl:gap-7 2xl:gap-8 flex-shrink-0">
+            <Link to="/" className={navLinkClass('/')}>
+              Home
+            </Link>
 
             <Link to="/about" className={navLinkClass('/about')}>
               About Us
             </Link>
 
-            {/* Products Dropdown - Clickable and hoverable with seamless cursor bridge */}
+            {/* Products Dropdown - Clickable and hoverable with cursor bridge */}
             <div
               ref={productsRef}
               className="relative py-2"
               onMouseEnter={() => setProductsOpen(true)}
               onMouseLeave={() => setProductsOpen(false)}
             >
-              <div className="inline-flex items-center">
+              <div className="inline-flex items-center gap-0.5">
                 <Link
                   to="/products"
                   className={navLinkClass('/products')}
@@ -112,16 +119,16 @@ const Navbar = ({ onOpenRfq }) => {
                   aria-expanded={productsOpen}
                 >
                   <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    className={`w-4 h-4 transition-transform duration-200 ${
                       productsOpen ? 'rotate-180 text-brand-gold' : ''
                     }`}
                   />
                 </button>
               </div>
 
-              {/* Dropdown Menu with zero gap bridge via padding */}
+              {/* Dropdown Menu */}
               {productsOpen && (
-                <div className="absolute top-full left-0 pt-2 w-72 animate-fade-in z-50">
+                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-2 w-72 animate-fade-in z-50">
                   <div className="bg-white rounded-lg shadow-xl border border-slate-200/80 py-2">
                     <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
                       Core Product Lines
@@ -134,9 +141,6 @@ const Navbar = ({ onOpenRfq }) => {
                         className="block px-4 py-2.5 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-gold transition-colors"
                       >
                         <div className="font-semibold text-slate-900">{cat.name}</div>
-                        <div className="text-[11px] text-slate-500 truncate">
-                          {cat.bullets ? cat.bullets.slice(0, 3).join(' • ') : ''}
-                        </div>
                       </Link>
                     ))}
                     <div className="border-t border-slate-100 mt-1 pt-1">
@@ -154,69 +158,6 @@ const Navbar = ({ onOpenRfq }) => {
               )}
             </div>
 
-            {/* Services Dropdown - Clickable and hoverable with seamless cursor bridge */}
-            <div
-              ref={servicesRef}
-              className="relative py-2"
-              onMouseEnter={() => setServicesOpen(true)}
-              onMouseLeave={() => setServicesOpen(false)}
-            >
-              <div className="inline-flex items-center">
-                <Link
-                  to="/services"
-                  className={navLinkClass('/services')}
-                  onClick={() => setServicesOpen(false)}
-                >
-                  <span>Services</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setServicesOpen(!servicesOpen);
-                  }}
-                  className="p-1 text-slate-500 hover:text-brand-gold focus:outline-none"
-                  aria-label="Toggle Services Menu"
-                  aria-expanded={servicesOpen}
-                >
-                  <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                      servicesOpen ? 'rotate-180 text-brand-gold' : ''
-                    }`}
-                  />
-                </button>
-              </div>
-
-              {/* Dropdown Menu with zero gap bridge via padding */}
-              {servicesOpen && (
-                <div className="absolute top-full left-0 pt-2 w-80 animate-fade-in z-50">
-                  <div className="bg-white rounded-lg shadow-xl border border-slate-200/80 py-2">
-                    <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
-                      Our 6 Integrated Capabilities
-                    </div>
-                    {services.map((service) => (
-                      <Link
-                        key={service.id}
-                        to={`/services#${service.id}`}
-                        onClick={() => setServicesOpen(false)}
-                        className="flex items-start gap-2.5 px-4 py-2 text-xs text-slate-700 hover:bg-slate-50 hover:text-brand-navy transition-colors"
-                      >
-                        <span className="font-bold text-brand-gold text-[11px] mt-0.5">
-                          {service.number}
-                        </span>
-                        <div>
-                          <div className="font-semibold text-slate-900">{service.title}</div>
-                          <div className="text-[11px] text-slate-500 line-clamp-1">
-                            {service.shortDesc}
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
             <Link to="/industries" className={navLinkClass('/industries')}>
               Industries
             </Link>
@@ -225,136 +166,242 @@ const Navbar = ({ onOpenRfq }) => {
               Global Markets
             </Link>
 
-            <Link to="/for-manufacturers" className={navLinkClass('/for-manufacturers')}>
-              For Manufacturers
+            <Link to="/contact" className={navLinkClass('/contact')}>
+              Contact
+            </Link>
+          </nav>
+
+          {/* 3. Right: Desktop CTAs */}
+          <div className="hidden lg:flex items-center justify-end gap-3 xl:gap-3.5 flex-shrink-0">
+            <Link
+              to="/contact"
+              className="btn-outline-navy text-xs sm:text-[13px] px-4 py-2.5 font-bold whitespace-nowrap shadow-xs"
+            >
+              Contact Us
             </Link>
 
-            <Link to="/for-buyers" className={navLinkClass('/for-buyers')}>
-              For Buyers
-            </Link>
-
-              <Link to="/contact" className={navLinkClass('/contact')}>
-                Contact
-              </Link>
-            </nav>
-
-            {/* Clean Vertical Divider between Navigation and CTAs */}
-            <div className="h-5 w-px bg-slate-200" aria-hidden="true" />
-
-            {/* Desktop CTAs with tight, consistent spacing */}
-            <div className="flex items-center gap-2.5 2xl:gap-3 flex-shrink-0">
-              <Link
-                to="/for-manufacturers"
-                className="btn-outline-navy text-xs px-3.5 py-2 font-semibold whitespace-nowrap"
-              >
-                Partner With Us
-              </Link>
-
-              <button
-                onClick={() => onOpenRfq ? onOpenRfq() : window.location.assign('/contact')}
-                className="btn-gold text-xs px-3.5 py-2 font-semibold whitespace-nowrap"
-              >
-                Send an Enquiry
-              </button>
-            </div>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <div className="flex xl:hidden items-center gap-2">
             <button
               onClick={() => onOpenRfq ? onOpenRfq() : window.location.assign('/contact')}
-              className="btn-gold text-xs px-3 py-1.5 sm:hidden"
+              className="btn-gold text-xs sm:text-[13px] px-4 py-2.5 font-bold whitespace-nowrap shadow-xs"
+            >
+              Send an Enquiry
+            </button>
+          </div>
+
+          {/* Mobile Actions: Enquire Button + Menu Toggle */}
+          <div className="flex lg:hidden items-center gap-2 sm:gap-3">
+            <button
+              onClick={() => onOpenRfq ? onOpenRfq() : window.location.assign('/contact')}
+              className="btn-gold text-xs font-bold px-3 sm:px-4 py-1.5 shadow-xs"
             >
               Enquire
             </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-slate-700 hover:text-brand-navy hover:bg-slate-100 focus:outline-none"
-              aria-label="Toggle navigation"
+              className="p-2 rounded-lg text-slate-700 hover:text-brand-navy hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-gold/40 transition-colors"
+              aria-label="Toggle navigation menu"
+              aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-6 h-6 text-brand-navy" /> : <Menu className="w-6 h-6 text-slate-800" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Drawer Backdrop */}
       {mobileMenuOpen && (
-        <div className="xl:hidden border-t border-slate-200 bg-white shadow-xl animate-fade-in max-h-[calc(100vh-5rem)] overflow-y-auto">
+        <div
+          className="fixed inset-0 top-[72px] sm:top-[80px] bg-slate-900/50 backdrop-blur-xs z-30 lg:hidden animate-fade-in"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Mobile Drawer Content */}
+      {mobileMenuOpen && (
+        <div className="relative z-40 lg:hidden border-t border-slate-200 bg-white shadow-2xl animate-fade-in max-h-[calc(100vh-4.5rem)] sm:max-h-[calc(100vh-5rem)] overflow-y-auto">
+          {/* Quick Notice Banner */}
+          <div className="bg-slate-50 px-4 py-2 border-b border-slate-100 text-[11px] text-slate-500 font-medium flex items-center justify-between">
+            <span>B2B Global Trade Desk</span>
+            <span className="text-brand-gold font-semibold">Navi Mumbai, IN</span>
+          </div>
+
           <div className="px-4 pt-3 pb-6 space-y-1">
             <Link
               to="/"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3.5 py-3 rounded-lg text-base font-semibold transition-colors ${
+                isActive('/') && location.pathname === '/'
+                  ? 'bg-amber-50 text-brand-gold font-bold border-l-4 border-brand-gold'
+                  : 'text-slate-800 hover:bg-slate-50 hover:text-brand-navy'
+              }`}
             >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              About Us
-            </Link>
-            <Link
-              to="/products"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              Products (Foundry & GPC, Chemicals, Minerals)
-            </Link>
-            <Link
-              to="/services"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              Services (6 Core Pillars)
-            </Link>
-            <Link
-              to="/industries"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              Industries We Serve
-            </Link>
-            <Link
-              to="/global-markets"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              Global Markets & Corridors
-            </Link>
-            <Link
-              to="/for-manufacturers"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              For Manufacturers (India Representation)
-            </Link>
-            <Link
-              to="/for-buyers"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              For Buyers (Global Sourcing)
-            </Link>
-            <Link
-              to="/contact"
-              className="block px-3 py-2 rounded-md text-base font-medium text-slate-800 hover:bg-slate-100 hover:text-brand-gold"
-            >
-              Contact Us
+              <span>Home</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
             </Link>
 
-            <div className="pt-4 border-t border-slate-100 flex flex-col gap-2">
-              <Link
-                to="/for-manufacturers"
-                className="btn-outline-navy w-full justify-center text-sm py-2.5"
+            <Link
+              to="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3.5 py-3 rounded-lg text-base font-semibold transition-colors ${
+                isActive('/about')
+                  ? 'bg-amber-50 text-brand-gold font-bold border-l-4 border-brand-gold'
+                  : 'text-slate-800 hover:bg-slate-50 hover:text-brand-navy'
+              }`}
+            >
+              <span>About Us</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+            </Link>
+
+            {/* Mobile Products Accordion */}
+            <div className="rounded-lg overflow-hidden border border-slate-100">
+              <div
+                className={`flex items-center justify-between px-3.5 py-3 text-base font-semibold transition-colors cursor-pointer ${
+                  isActive('/products')
+                    ? 'bg-amber-50/70 text-brand-gold font-bold'
+                    : 'text-slate-800 hover:bg-slate-50'
+                }`}
+                onClick={() => setMobileProductsOpen(!mobileProductsOpen)}
               >
-                Partner With Us
-              </Link>
+                <Link
+                  to="/products"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="flex-1 hover:text-brand-gold"
+                >
+                  Products
+                </Link>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setMobileProductsOpen(!mobileProductsOpen);
+                  }}
+                  className="p-1 text-slate-500 hover:text-brand-gold focus:outline-none"
+                  aria-label="Expand Products"
+                >
+                  <ChevronDown
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      mobileProductsOpen ? 'rotate-180 text-brand-gold' : ''
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {mobileProductsOpen && (
+                <div className="bg-slate-50/80 px-3 py-2 space-y-1 border-t border-slate-100">
+                  <div className="px-3 py-1 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                    Product Categories
+                  </div>
+                  {products.map((cat) => (
+                    <Link
+                      key={cat.id}
+                      to={`/products#${cat.id}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block px-3 py-2 text-sm text-slate-700 hover:text-brand-gold hover:bg-white rounded-md font-medium transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                  <div className="pt-1.5 border-t border-slate-200/60">
+                    <Link
+                      to="/products"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between px-3 py-2 text-xs font-bold text-brand-navy hover:text-brand-gold"
+                    >
+                      <span>Explore Full Catalog</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <Link
+              to="/industries"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3.5 py-3 rounded-lg text-base font-semibold transition-colors ${
+                isActive('/industries')
+                  ? 'bg-amber-50 text-brand-gold font-bold border-l-4 border-brand-gold'
+                  : 'text-slate-800 hover:bg-slate-50 hover:text-brand-navy'
+              }`}
+            >
+              <span>Industries We Serve</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+            </Link>
+
+            <Link
+              to="/global-markets"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3.5 py-3 rounded-lg text-base font-semibold transition-colors ${
+                isActive('/global-markets')
+                  ? 'bg-amber-50 text-brand-gold font-bold border-l-4 border-brand-gold'
+                  : 'text-slate-800 hover:bg-slate-50 hover:text-brand-navy'
+              }`}
+            >
+              <span>Global Markets & Corridors</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+            </Link>
+
+            <Link
+              to="/contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className={`flex items-center justify-between px-3.5 py-3 rounded-lg text-base font-semibold transition-colors ${
+                isActive('/contact')
+                  ? 'bg-amber-50 text-brand-gold font-bold border-l-4 border-brand-gold'
+                  : 'text-slate-800 hover:bg-slate-50 hover:text-brand-navy'
+              }`}
+            >
+              <span>Contact Us</span>
+              <ChevronRight className="w-4 h-4 text-slate-400" />
+            </Link>
+
+            {/* Quick Mobile Action CTAs */}
+            <div className="pt-4 mt-2 border-t border-slate-200 flex flex-col gap-2.5">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   if (onOpenRfq) onOpenRfq();
                   else window.location.assign('/contact');
                 }}
-                className="btn-gold w-full justify-center text-sm py-2.5"
+                className="btn-gold w-full justify-center text-sm font-bold py-3 shadow-sm"
               >
-                Send an Enquiry
+                Send an Enquiry / RFQ
               </button>
+              <Link
+                to="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="btn-outline-navy w-full justify-center text-sm font-bold py-3"
+              >
+                Contact Trade Desk
+              </Link>
             </div>
+
+            {/* Mobile Direct Contact Details */}
+            {company && (
+              <div className="mt-4 pt-4 border-t border-slate-100 bg-slate-50/70 p-3.5 rounded-lg space-y-2 text-xs text-slate-600">
+                <a
+                  href={`tel:${company.phone ? company.phone.replace(/\s+/g, '') : ''}`}
+                  className="flex items-center gap-2 hover:text-brand-gold transition-colors font-medium"
+                >
+                  <Phone className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
+                  <span>{company.phone}</span>
+                </a>
+                <a
+                  href={`mailto:${company.email || ''}`}
+                  className="flex items-center gap-2 hover:text-brand-gold transition-colors font-medium"
+                >
+                  <Mail className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
+                  <span className="truncate">{company.email}</span>
+                </a>
+                <div className="flex items-center gap-2 text-slate-500 pt-1 border-t border-slate-200/50">
+                  <MapPin className="w-3.5 h-3.5 text-brand-gold flex-shrink-0" />
+                  <span>{company.locationDisplay || 'Navi Mumbai, India'}</span>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -363,3 +410,4 @@ const Navbar = ({ onOpenRfq }) => {
 };
 
 export default Navbar;
+
