@@ -94,15 +94,19 @@ export default function ProductsAdmin() {
 
     try {
       if (editingCategory) {
-        await updateProductCategory(editingCategory.id, categoryFormData);
-        toast.success(`Section "${categoryFormData.name}" saved to Supabase`);
+        const res = await updateProductCategory(editingCategory.id, categoryFormData);
+        if (res && res.success === false) {
+          toast.error('Failed to save section to Supabase: ' + (res.error?.message || 'Database error'));
+        } else {
+          toast.success(`Section "${categoryFormData.name}" saved to Supabase`);
+        }
       } else {
         const created = await addProductCategory(categoryFormData);
         setSelectedCatId(created.id);
         toast.success(`Section "${categoryFormData.name}" saved to Supabase`);
       }
-    } catch (err) {
-      toast.error('Error saving section to Supabase');
+    } catch (err: any) {
+      toast.error('Error saving section to Supabase: ' + (err.message || ''));
     }
     setIsSectionModalOpen(false);
   };
@@ -113,10 +117,14 @@ export default function ProductsAdmin() {
       return;
     }
     if (window.confirm(`Are you sure you want to delete the section "${catName}" and all products under it?`)) {
-      await deleteProductCategory(catId);
-      const remaining = products.filter(c => c.id !== catId);
-      if (remaining.length > 0) setSelectedCatId(remaining[0].id);
-      toast.success(`Section "${catName}" removed from Supabase`);
+      const res = await deleteProductCategory(catId);
+      if (res && res.success === false) {
+        toast.error('Failed to delete section from Supabase: ' + (res.error?.message || ''));
+      } else {
+        const remaining = products.filter(c => c.id !== catId);
+        if (remaining.length > 0) setSelectedCatId(remaining[0].id);
+        toast.success(`Section "${catName}" removed from Supabase`);
+      }
     }
   };
 
@@ -183,29 +191,41 @@ export default function ProductsAdmin() {
     try {
       if (isAddingNewProduct) {
         const newId = productFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        await addProduct(targetCatId, {
+        const res = await addProduct(targetCatId, {
           id: newId,
           ...productFormData
         });
-        toast.success('Product added and saved to Supabase');
-        setIsAddingNewProduct(false);
+        if (res && res.success === false) {
+          toast.error('Failed to add product to Supabase: ' + (res.error?.message || 'Database error'));
+        } else {
+          toast.success('Product added and saved to Supabase');
+          setIsAddingNewProduct(false);
+        }
       } else if (editingProduct) {
-        await updateProduct(targetCatId, {
+        const res = await updateProduct(targetCatId, {
           ...editingProduct,
           ...productFormData
         });
-        toast.success('Product updated and saved to Supabase');
-        setEditingProduct(null);
+        if (res && res.success === false) {
+          toast.error('Failed to update product in Supabase: ' + (res.error?.message || 'Database error'));
+        } else {
+          toast.success('Product updated and saved to Supabase');
+          setEditingProduct(null);
+        }
       }
-    } catch (err) {
-      toast.error('Error saving product to Supabase');
+    } catch (err: any) {
+      toast.error('Error saving product to Supabase: ' + (err.message || ''));
     }
   };
 
   const handleDeleteProduct = async (catId, prodId, prodName) => {
     if (window.confirm(`Are you sure you want to remove "${prodName}"?`)) {
-      await deleteProduct(catId, prodId);
-      toast.success('Product removed from Supabase');
+      const res = await deleteProduct(catId, prodId);
+      if (res && res.success === false) {
+        toast.error('Failed to remove product from Supabase: ' + (res.error?.message || ''));
+      } else {
+        toast.success('Product removed from Supabase');
+      }
     }
   };
 
