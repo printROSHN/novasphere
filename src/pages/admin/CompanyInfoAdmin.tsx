@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { Building, Save, Mail, Phone, MapPin, ShieldCheck, User } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Building, Save, Mail, Phone, MapPin, ShieldCheck, User, Loader2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useContent } from '../../contexts/ContentContext';
 
 export default function CompanyInfoAdmin() {
   const { company, updateCompanyInfo } = useContent();
+  const [isSaving, setIsSaving] = useState(false);
 
   const [formData, setFormData] = useState({
     name: company.name || 'NovaSphere Exim',
@@ -24,15 +25,36 @@ export default function CompanyInfoAdmin() {
     commitment: company.commitment || ''
   });
 
-  const handleChange = (e) => {
+  // Sync state when loaded asynchronously from Supabase
+  useEffect(() => {
+    if (company && company.name) {
+      setFormData(prev => ({
+        ...prev,
+        ...company
+      }));
+    }
+  }, [company]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateCompanyInfo(formData);
-    toast.success('Company & Contact settings updated');
+    setIsSaving(true);
+    try {
+      const res = await updateCompanyInfo(formData);
+      if (res && res.success === false) {
+        toast.error('Failed to save to Supabase: ' + (res.error?.message || 'Check database permissions'));
+      } else {
+        toast.success('Company & Contact settings saved to Supabase');
+      }
+    } catch (err: any) {
+      toast.error('Save error: ' + (err.message || 'Unknown error'));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -216,9 +238,22 @@ export default function CompanyInfoAdmin() {
         </div>
 
         <div className="pt-4 flex justify-end border-t border-slate-200">
-          <button type="submit" className="btn-gold px-6 py-2.5 flex items-center gap-2">
-            <Save className="w-4 h-4" />
-            <span>Save Company Information</span>
+          <button
+            type="submit"
+            disabled={isSaving}
+            className="btn-gold px-6 py-2.5 flex items-center gap-2 disabled:opacity-50"
+          >
+            {isSaving ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving to Supabase...</span>
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4" />
+                <span>Save Company Information</span>
+              </>
+            )}
           </button>
         </div>
       </form>

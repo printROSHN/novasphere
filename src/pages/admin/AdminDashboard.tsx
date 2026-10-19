@@ -17,7 +17,7 @@ import {
 import { useContent } from '../../contexts/ContentContext';
 
 export default function AdminDashboard() {
-  const { inquiries, products, company } = useContent();
+  const { inquiries, products, company, isDbConnected } = useContent();
 
   const totalInquiries = inquiries.length;
   const newInquiries = inquiries.filter(i => i.status === 'new').length;
@@ -31,9 +31,17 @@ export default function AdminDashboard() {
       {/* Welcome Banner */}
       <div className="bg-brand-dark text-white rounded-2xl p-6 sm:p-8 border border-brand-blue/60 shadow-lg flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-gold text-brand-dark">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span>Operational Trade Desk Active</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand-gold text-brand-dark">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>Operational Trade Desk Active</span>
+            </div>
+            {isDbConnected && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Supabase Live DB</span>
+              </div>
+            )}
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             NovaSphere Exim Portal

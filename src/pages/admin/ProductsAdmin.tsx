@@ -85,34 +85,38 @@ export default function ProductsAdmin() {
     setIsSectionModalOpen(true);
   };
 
-  const handleSaveSection = (e) => {
+  const handleSaveSection = async (e) => {
     e.preventDefault();
     if (!categoryFormData.name.trim()) {
       toast.error('Section name is required');
       return;
     }
 
-    if (editingCategory) {
-      updateProductCategory(editingCategory.id, categoryFormData);
-      toast.success(`Section "${categoryFormData.name}" updated`);
-    } else {
-      const created = addProductCategory(categoryFormData);
-      setSelectedCatId(created.id);
-      toast.success(`Section "${categoryFormData.name}" created`);
+    try {
+      if (editingCategory) {
+        await updateProductCategory(editingCategory.id, categoryFormData);
+        toast.success(`Section "${categoryFormData.name}" saved to Supabase`);
+      } else {
+        const created = await addProductCategory(categoryFormData);
+        setSelectedCatId(created.id);
+        toast.success(`Section "${categoryFormData.name}" saved to Supabase`);
+      }
+    } catch (err) {
+      toast.error('Error saving section to Supabase');
     }
     setIsSectionModalOpen(false);
   };
 
-  const handleDeleteSection = (catId, catName) => {
+  const handleDeleteSection = async (catId, catName) => {
     if (products.length <= 1) {
       toast.error('You must keep at least one product section');
       return;
     }
     if (window.confirm(`Are you sure you want to delete the section "${catName}" and all products under it?`)) {
-      deleteProductCategory(catId);
+      await deleteProductCategory(catId);
       const remaining = products.filter(c => c.id !== catId);
       if (remaining.length > 0) setSelectedCatId(remaining[0].id);
-      toast.success(`Section "${catName}" removed`);
+      toast.success(`Section "${catName}" removed from Supabase`);
     }
   };
 
@@ -167,7 +171,7 @@ export default function ProductsAdmin() {
     });
   };
 
-  const handleSaveProduct = (e) => {
+  const handleSaveProduct = async (e) => {
     e.preventDefault();
     if (!productFormData.name.trim()) {
       toast.error('Product name is required');
@@ -176,28 +180,32 @@ export default function ProductsAdmin() {
 
     const targetCatId = productFormData.categoryId || selectedCatId;
 
-    if (isAddingNewProduct) {
-      const newId = productFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-      addProduct(targetCatId, {
-        id: newId,
-        ...productFormData
-      });
-      toast.success('Product added successfully');
-      setIsAddingNewProduct(false);
-    } else if (editingProduct) {
-      updateProduct(targetCatId, {
-        ...editingProduct,
-        ...productFormData
-      });
-      toast.success('Product updated successfully');
-      setEditingProduct(null);
+    try {
+      if (isAddingNewProduct) {
+        const newId = productFormData.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        await addProduct(targetCatId, {
+          id: newId,
+          ...productFormData
+        });
+        toast.success('Product added and saved to Supabase');
+        setIsAddingNewProduct(false);
+      } else if (editingProduct) {
+        await updateProduct(targetCatId, {
+          ...editingProduct,
+          ...productFormData
+        });
+        toast.success('Product updated and saved to Supabase');
+        setEditingProduct(null);
+      }
+    } catch (err) {
+      toast.error('Error saving product to Supabase');
     }
   };
 
-  const handleDeleteProduct = (catId, prodId, prodName) => {
+  const handleDeleteProduct = async (catId, prodId, prodName) => {
     if (window.confirm(`Are you sure you want to remove "${prodName}"?`)) {
-      deleteProduct(catId, prodId);
-      toast.success('Product removed');
+      await deleteProduct(catId, prodId);
+      toast.success('Product removed from Supabase');
     }
   };
 

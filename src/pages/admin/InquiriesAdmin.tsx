@@ -44,19 +44,35 @@ export default function InquiriesAdmin() {
     return matchesSearch && matchesType && matchesStatus;
   });
 
-  const handleStatusChange = (id, newStatus) => {
-    updateInquiryStatus(id, newStatus);
-    toast.success(`Inquiry status updated to ${newStatus}`);
-    if (selectedInquiry && selectedInquiry.id === id) {
-      setSelectedInquiry(prev => ({ ...prev, status: newStatus }));
+  const handleStatusChange = async (id, newStatus) => {
+    try {
+      const res = await updateInquiryStatus(id, newStatus);
+      if (res && res.success === false) {
+        toast.error('Failed to update status in Supabase');
+      } else {
+        toast.success(`Inquiry status updated to ${newStatus} in Supabase`);
+      }
+      if (selectedInquiry && selectedInquiry.id === id) {
+        setSelectedInquiry(prev => ({ ...prev, status: newStatus }));
+      }
+    } catch {
+      toast.error('Error updating inquiry status');
     }
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this commercial lead?')) {
-      deleteInquiry(id);
-      toast.success('Inquiry deleted');
-      if (selectedInquiry?.id === id) setSelectedInquiry(null);
+      try {
+        const res = await deleteInquiry(id);
+        if (res && res.success === false) {
+          toast.error('Failed to delete inquiry from Supabase');
+        } else {
+          toast.success('Inquiry removed from Supabase');
+        }
+        if (selectedInquiry?.id === id) setSelectedInquiry(null);
+      } catch {
+        toast.error('Error deleting inquiry');
+      }
     }
   };
 

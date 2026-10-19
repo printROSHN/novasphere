@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FileText,
   Save,
@@ -21,40 +21,71 @@ export default function PageContentAdmin() {
   const [gatewaysData, setGatewaysData] = useState(pageContent.dualGateways);
   const [bottomCtaData, setBottomCtaData] = useState(pageContent.bottomCta);
 
-  const handleSaveHero = (e) => {
+  // Sync state when loaded asynchronously from Supabase
+  useEffect(() => {
+    if (pageContent) {
+      if (pageContent.hero) setHeroData(pageContent.hero);
+      if (pageContent.about) setAboutData(pageContent.about);
+      if (pageContent.whyChooseUs) setWhyData(pageContent.whyChooseUs);
+      if (pageContent.dualGateways) setGatewaysData(pageContent.dualGateways);
+      if (pageContent.bottomCta) setBottomCtaData(pageContent.bottomCta);
+    }
+  }, [pageContent]);
+
+  const handleSaveHero = async (e) => {
     e.preventDefault();
-    updatePageContent('hero', heroData);
-    toast.success('Hero section content saved');
+    try {
+      await updatePageContent('hero', heroData);
+      toast.success('Hero section saved to Supabase');
+    } catch {
+      toast.error('Error saving Hero section');
+    }
   };
 
-  const handleSaveAbout = (e) => {
+  const handleSaveAbout = async (e) => {
     e.preventDefault();
-    updatePageContent('about', aboutData);
-    toast.success('About section content saved');
+    try {
+      await updatePageContent('about', aboutData);
+      toast.success('About section saved to Supabase');
+    } catch {
+      toast.error('Error saving About section');
+    }
   };
 
-  const handleSaveWhy = (e) => {
+  const handleSaveWhy = async (e) => {
     e.preventDefault();
-    updatePageContent('whyChooseUs', whyData);
-    toast.success('Why Choose Us content saved');
+    try {
+      await updatePageContent('whyChooseUs', whyData);
+      toast.success('Why Choose Us saved to Supabase');
+    } catch {
+      toast.error('Error saving Why Choose Us');
+    }
   };
 
-  const handleSaveGateways = (e) => {
+  const handleSaveGateways = async (e) => {
     e.preventDefault();
-    updatePageContent('dualGateways', gatewaysData);
-    toast.success('Dual Gateways content saved');
+    try {
+      await updatePageContent('dualGateways', gatewaysData);
+      toast.success('Dual Gateways saved to Supabase');
+    } catch {
+      toast.error('Error saving Dual Gateways');
+    }
   };
 
-  const handleSaveBottomCta = (e) => {
+  const handleSaveBottomCta = async (e) => {
     e.preventDefault();
-    updatePageContent('bottomCta', bottomCtaData);
-    toast.success('Bottom CTA content saved');
+    try {
+      await updatePageContent('bottomCta', bottomCtaData);
+      toast.success('Bottom CTA saved to Supabase');
+    } catch {
+      toast.error('Error saving Bottom CTA');
+    }
   };
 
-  const handleReset = () => {
-    if (window.confirm('Reset all website content back to factory defaults?')) {
-      resetToDefaults();
-      toast.success('Content reset to defaults');
+  const handleReset = async () => {
+    if (window.confirm('Reset all website content back to factory defaults in Supabase?')) {
+      await resetToDefaults();
+      toast.success('Content reset to defaults in Supabase');
       window.location.reload();
     }
   };

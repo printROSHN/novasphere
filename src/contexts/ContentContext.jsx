@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { initialPageContent, sampleInquiries } from '../data/initialData';
 import { servicesData } from '../data/services';
 import { productCategories, CATEGORY_IMAGE_POOL } from '../data/products';
@@ -8,247 +8,201 @@ import { supabase } from '@/integrations/supabase/client';
 
 const ContentContext = createContext(null);
 
-const STORAGE_KEYS = {
-  PAGE_CONTENT: 'novasphere_page_content_v1',
-  SERVICES: 'novasphere_services_v1',
-  PRODUCTS: 'novasphere_products_v1',
-  COMPANY: 'novasphere_company_v1',
-  INDUSTRIES: 'novasphere_industries_v1',
-  INQUIRIES: 'novasphere_inquiries_v1'
-};
-
 export const ContentProvider = ({ children }) => {
-  // 1. Page Content State
-  const [pageContent, setPageContent] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.PAGE_CONTENT);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.quickFeatures) {
-          parsed.quickFeatures = parsed.quickFeatures.map(item => {
-            if (item.id === 'qf-2' && item.title === 'Import & Export') {
-              return { ...item, title: 'Export & Import' };
-            }
-            if (item.id === 'qf-5' && (item.title.includes('Retainer') || item.title.includes('Commission') || item.title.includes('Strategic Partnership') || item.title.includes('Partnership'))) {
-              return { ...item, title: 'Quality & Compliance', desc: 'Rigorous inspection & COA verification', icon: 'ShieldCheck' };
-            }
-            return item;
-          });
-        }
-        if (parsed.whyChooseUs?.items) {
-          parsed.whyChooseUs.items = parsed.whyChooseUs.items.map(item => {
-            if (item.id === 'wcu-3' || item.title?.toLowerCase().includes('partnership')) {
-              return { ...item, title: 'Commercial Flexibility', desc: 'Tailored supply contracts and commercial terms', icon: 'Sliders' };
-            }
-            return item;
-          });
-        }
-        if (parsed.hero?.ctaPrimary === 'Partner With Us') {
-          parsed.hero.ctaPrimary = 'Explore Products';
-        }
-        if (parsed.bottomCta?.ctaPrimary === 'Partner With Us') {
-          parsed.bottomCta.ctaPrimary = 'Explore Catalog';
-        }
-        return parsed;
-      }
-      return initialPageContent;
-    } catch (e) {
-      return initialPageContent;
-    }
-  });
+  // 1. Core States initialized with static defaults
+  const [pageContent, setPageContent] = useState(initialPageContent);
+  const [services, setServices] = useState(servicesData);
+  const [products, setProducts] = useState(productCategories);
+  const [company, setCompany] = useState(companyInfo);
+  const [industries, setIndustries] = useState(industriesData);
+  const [inquiries, setInquiries] = useState(sampleInquiries);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDbConnected, setIsDbConnected] = useState(false);
 
-  // 2. Services State
-  const [services, setServices] = useState(() => {
+  // Helper to persist a specific CMS key into Supabase site_content table
+  const persistContentKey = useCallback(async (key, data) => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.SERVICES);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        return parsed.map(s => {
-          if (s.title && (s.title.includes('Retainer') || s.title.includes('Commission') || s.title.includes('Strategic Partnership'))) {
-            return { ...s, title: 'Contract Commercial Execution' };
-          }
-          return s;
+      const { error } = await supabase
+        .from('site_content')
+        .upsert({
+          key,
+          data,
+          updated_at: new Date().toISOString()
         });
+
+      if (error) {
+        console.error(`Supabase persistence error for [${key}]:`, error.message);
+        return { success: false, error };
       }
-      return servicesData;
-    } catch (e) {
-      return servicesData;
+      return { success: true };
+    } catch (err) {
+      console.error(`Supabase persistence exception for [${key}]:`, err);
+      return { success: false, error: err };
     }
-  });
+  }, []);
 
-  // 3. Products State
-  const [products, setProducts] = useState(() => {
+  // Helper to auto-seed Supabase site_content if empty
+  const autoSeedSupabase = useCallback(async () => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Automatically migrate any broken unsplash images or missing images to local sequential pool
-        return parsed.map((cat, idx) => {
-          if (!cat.image || cat.image.includes('unsplash.com')) {
-            return {
-              ...cat,
-              image: CATEGORY_IMAGE_POOL[idx % CATEGORY_IMAGE_POOL.length]
-            };
-          }
-          return cat;
-        });
+      const initialPayload = [
+        { key: 'company', data: companyInfo },
+        { key: 'products', data: productCategories },
+        { key: 'page_content', data: initialPageContent },
+        { key: 'services', data: servicesData },
+        { key: 'industries', data: industriesData }
+      ];
+      const { error } = await supabase.from('site_content').upsert(initialPayload);
+      if (!error) {
+        console.log('✅ NovaSphere: Supabase site_content initialized with catalog defaults.');
       }
-      return productCategories;
     } catch (e) {
-      return productCategories;
+      console.warn('Supabase auto-seed warning:', e);
     }
-  });
+  }, []);
 
-  // 4. Company Info State
-  const [company, setCompany] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.COMPANY);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        // Ensure new phone and email take precedence over old defaults
-        return {
-          ...companyInfo,
-          ...parsed,
-          email: 'info@novasphereexim.com',
-          phone: '+91 90227 82655',
-          whatsapp: '+91 90227 82655'
-        };
-      }
-      return companyInfo;
-    } catch (e) {
-      return companyInfo;
-    }
-  });
-
-  // 5. Industries State
-  const [industries, setIndustries] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.INDUSTRIES);
-      return saved ? JSON.parse(saved) : industriesData;
-    } catch (e) {
-      return industriesData;
-    }
-  });
-
-  // 6. Inquiries State
-  const [inquiries, setInquiries] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEYS.INQUIRIES);
-      return saved ? JSON.parse(saved) : sampleInquiries;
-    } catch (e) {
-      return sampleInquiries;
-    }
-  });
-
-  // Save to localStorage when state changes
+  // 2. Hydrate from Supabase on Mount
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PAGE_CONTENT, JSON.stringify(pageContent));
-    } catch (e) {}
-  }, [pageContent]);
+    let isMounted = true;
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.SERVICES, JSON.stringify(services));
-    } catch (e) {}
-  }, [services]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
-    } catch (e) {}
-  }, [products]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.COMPANY, JSON.stringify(company));
-    } catch (e) {}
-  }, [company]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.INDUSTRIES, JSON.stringify(industries));
-    } catch (e) {}
-  }, [industries]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.INQUIRIES, JSON.stringify(inquiries));
-    } catch (e) {}
-  }, [inquiries]);
-
-  // Optional Supabase Sync on mount
-  useEffect(() => {
-    const fetchSupabaseInquiries = async () => {
+    const fetchAllData = async () => {
       try {
-        const { data, error } = await supabase
+        setIsLoading(true);
+
+        // Fetch site_content (CMS data)
+        const { data: cmsData, error: cmsError } = await supabase
+          .from('site_content')
+          .select('*');
+
+        if (!cmsError && cmsData) {
+          setIsDbConnected(true);
+          if (cmsData.length > 0) {
+            const dataMap = {};
+            cmsData.forEach(item => {
+              dataMap[item.key] = item.data;
+            });
+
+            if (isMounted) {
+              if (dataMap.page_content) setPageContent(dataMap.page_content);
+              if (dataMap.services) setServices(dataMap.services);
+              if (dataMap.products) {
+                // Ensure images are valid
+                const cleanProducts = dataMap.products.map((cat, idx) => {
+                  if (!cat.image || cat.image.includes('unsplash.com')) {
+                    return {
+                      ...cat,
+                      image: CATEGORY_IMAGE_POOL[idx % CATEGORY_IMAGE_POOL.length]
+                    };
+                  }
+                  return cat;
+                });
+                setProducts(cleanProducts);
+              }
+              if (dataMap.company) setCompany(dataMap.company);
+              if (dataMap.industries) setIndustries(dataMap.industries);
+            }
+          } else {
+            // Table exists but has 0 rows -> auto seed
+            await autoSeedSupabase();
+          }
+        } else if (cmsError) {
+          console.warn('Supabase site_content table check notice:', cmsError.message);
+        }
+
+        // Fetch inquiries from Supabase
+        const { data: inqData, error: inqError } = await supabase
           .from('inquiries')
           .select('*')
-          .order('updated_at', { ascending: false });
+          .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
-          // Merge remote with local without duplicating
-          setInquiries(prev => {
-            const remoteMapped = data.map(item => ({
+        if (!inqError && inqData && inqData.length > 0) {
+          if (isMounted) {
+            const remoteMapped = inqData.map(item => ({
               id: item.id,
               full_name: item.full_name || item.name || 'Anonymous',
               company_name: item.company_name || item.company || '',
               email: item.email || '',
               phone: item.phone || '',
               country: item.country || '',
-              inquiry_type: item.inquiry_type || 'General Trade Enquiry',
+              inquiry_type: item.inquiry_type || 'Buyer looking for products',
               product_interest: item.product_interest || item.subject || '',
               message: item.message || '',
               status: item.status || 'new',
               created_at: item.created_at || item.updated_at || new Date().toISOString()
             }));
-            return remoteMapped;
-          });
+            setInquiries(remoteMapped);
+          }
         }
       } catch (err) {
-        // Silently use localStorage fallback
+        console.warn('Supabase sync exception, falling back to static defaults:', err);
+      } finally {
+        if (isMounted) setIsLoading(false);
       }
     };
 
-    fetchSupabaseInquiries();
-  }, []);
+    fetchAllData();
 
-  // Action Handlers
-  const updatePageContent = (sectionKey, newSectionData) => {
-    setPageContent(prev => ({
-      ...prev,
+    return () => {
+      isMounted = false;
+    };
+  }, [autoSeedSupabase]);
+
+  // --- Dynamic Action Handlers (Live Supabase Updates) ---
+
+  // Page Content Handlers
+  const updatePageContent = async (sectionKey, newSectionData) => {
+    const updated = {
+      ...pageContent,
       [sectionKey]: {
-        ...prev[sectionKey],
+        ...pageContent[sectionKey],
         ...newSectionData
       }
-    }));
+    };
+    setPageContent(updated);
+    return await persistContentKey('page_content', updated);
   };
 
-  const updateQuickFeature = (id, updatedFields) => {
-    setPageContent(prev => ({
-      ...prev,
-      quickFeatures: prev.quickFeatures.map(item =>
+  const updateQuickFeature = async (id, updatedFields) => {
+    const updated = {
+      ...pageContent,
+      quickFeatures: pageContent.quickFeatures.map(item =>
         item.id === id ? { ...item, ...updatedFields } : item
       )
-    }));
+    };
+    setPageContent(updated);
+    return await persistContentKey('page_content', updated);
   };
 
-  const updateService = (updatedService) => {
-    setServices(prev =>
-      prev.map(s => (s.id === updatedService.id ? updatedService : s))
-    );
+  // Company Info Handler
+  const updateCompanyInfo = async (newInfo) => {
+    const updated = {
+      ...company,
+      ...newInfo
+    };
+    setCompany(updated);
+    return await persistContentKey('company', updated);
   };
 
-  const addService = (newService) => {
-    setServices(prev => [...prev, newService]);
+  // Services Handlers
+  const updateService = async (updatedService) => {
+    const updated = services.map(s => (s.id === updatedService.id ? updatedService : s));
+    setServices(updated);
+    return await persistContentKey('services', updated);
   };
 
-  const deleteService = (serviceId) => {
-    setServices(prev => prev.filter(s => s.id !== serviceId));
+  const addService = async (newService) => {
+    const updated = [...services, newService];
+    setServices(updated);
+    return await persistContentKey('services', updated);
   };
 
-  // --- Product Categories (Sections) CRUD ---
-  const addProductCategory = (newCat) => {
+  const deleteService = async (serviceId) => {
+    const updated = services.filter(s => s.id !== serviceId);
+    setServices(updated);
+    return await persistContentKey('services', updated);
+  };
+
+  // Product Categories (Sections) CRUD
+  const addProductCategory = async (newCat) => {
     const categoryId = newCat.id || newCat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const fallbackImage = CATEGORY_IMAGE_POOL[products.length % CATEGORY_IMAGE_POOL.length];
     const categoryToAdd = {
@@ -260,100 +214,94 @@ export const ContentProvider = ({ children }) => {
       bullets: newCat.bullets || [],
       products: newCat.products || []
     };
-    setProducts(prev => [...prev, categoryToAdd]);
+    const updated = [...products, categoryToAdd];
+    setProducts(updated);
+    await persistContentKey('products', updated);
     return categoryToAdd;
   };
 
-  const updateProductCategory = (categoryId, updatedFields) => {
-    setProducts(prev =>
-      prev.map(cat =>
-        cat.id === categoryId
-          ? { ...cat, ...updatedFields, products: updatedFields.products || cat.products }
-          : cat
-      )
+  const updateProductCategory = async (categoryId, updatedFields) => {
+    const updated = products.map(cat =>
+      cat.id === categoryId
+        ? { ...cat, ...updatedFields, products: updatedFields.products || cat.products }
+        : cat
     );
+    setProducts(updated);
+    return await persistContentKey('products', updated);
   };
 
-  const deleteProductCategory = (categoryId) => {
-    setProducts(prev => prev.filter(cat => cat.id !== categoryId));
+  const deleteProductCategory = async (categoryId) => {
+    const updated = products.filter(cat => cat.id !== categoryId);
+    setProducts(updated);
+    return await persistContentKey('products', updated);
   };
 
-  // --- Products CRUD ---
-  const updateProduct = (categoryId, updatedProduct) => {
-    setProducts(prev =>
-      prev.map(cat => {
-        // If categoryId matches, update product inside it
-        if (cat.id === categoryId) {
-          return {
-            ...cat,
-            products: (cat.products || []).map(p =>
-              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
-            )
-          };
-        }
-        // Fallback: check if the product belongs to this category even if categoryId param was omitted/mismatched
-        const hasProduct = (cat.products || []).some(p => p.id === updatedProduct.id);
-        if (hasProduct) {
-          return {
-            ...cat,
-            products: cat.products.map(p =>
-              p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
-            )
-          };
-        }
-        return cat;
-      })
-    );
-  };
-
-  const addProduct = (categoryId, newProduct) => {
-    setProducts(prev => {
-      // Check if target category exists
-      const targetCatExists = prev.some(c => c.id === categoryId);
-      if (targetCatExists) {
-        return prev.map(cat => {
-          if (cat.id !== categoryId) return cat;
-          return {
-            ...cat,
-            products: [...(cat.products || []), newProduct]
-          };
-        });
-      }
-      // If target category doesn't exist, append to the first category
-      if (prev.length > 0) {
-        return prev.map((cat, idx) => {
-          if (idx !== 0) return cat;
-          return {
-            ...cat,
-            products: [...(cat.products || []), newProduct]
-          };
-        });
-      }
-      return prev;
-    });
-  };
-
-  const deleteProduct = (categoryId, productId) => {
-    setProducts(prev =>
-      prev.map(cat => {
-        if (categoryId && cat.id !== categoryId) return cat;
+  // Products CRUD
+  const updateProduct = async (categoryId, updatedProduct) => {
+    const updated = products.map(cat => {
+      if (cat.id === categoryId) {
         return {
           ...cat,
-          products: (cat.products || []).filter(p => p.id !== productId)
+          products: (cat.products || []).map(p =>
+            p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+          )
         };
-      })
-    );
+      }
+      const hasProduct = (cat.products || []).some(p => p.id === updatedProduct.id);
+      if (hasProduct) {
+        return {
+          ...cat,
+          products: cat.products.map(p =>
+            p.id === updatedProduct.id ? { ...p, ...updatedProduct } : p
+          )
+        };
+      }
+      return cat;
+    });
+    setProducts(updated);
+    return await persistContentKey('products', updated);
   };
 
-  const updateCompanyInfo = (newInfo) => {
-    setCompany(prev => ({
-      ...prev,
-      ...newInfo
-    }));
+  const addProduct = async (categoryId, newProduct) => {
+    let updated;
+    const targetCatExists = products.some(c => c.id === categoryId);
+    if (targetCatExists) {
+      updated = products.map(cat => {
+        if (cat.id !== categoryId) return cat;
+        return {
+          ...cat,
+          products: [...(cat.products || []), newProduct]
+        };
+      });
+    } else if (products.length > 0) {
+      updated = products.map((cat, idx) => {
+        if (idx !== 0) return cat;
+        return {
+          ...cat,
+          products: [...(cat.products || []), newProduct]
+        };
+      });
+    } else {
+      updated = products;
+    }
+    setProducts(updated);
+    return await persistContentKey('products', updated);
   };
 
-  // --- Industries CRUD ---
-  const addIndustry = (newInd) => {
+  const deleteProduct = async (categoryId, productId) => {
+    const updated = products.map(cat => {
+      if (categoryId && cat.id !== categoryId) return cat;
+      return {
+        ...cat,
+        products: (cat.products || []).filter(p => p.id !== productId)
+      };
+    });
+    setProducts(updated);
+    return await persistContentKey('products', updated);
+  };
+
+  // Industries CRUD
+  const addIndustry = async (newInd) => {
     const id = newInd.id || newInd.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
     const entry = {
       id,
@@ -362,20 +310,25 @@ export const ContentProvider = ({ children }) => {
       icon: newInd.icon || 'Factory',
       productsSupplied: newInd.productsSupplied || []
     };
-    setIndustries(prev => [...prev, entry]);
+    const updated = [...industries, entry];
+    setIndustries(updated);
+    await persistContentKey('industries', updated);
     return entry;
   };
 
-  const updateIndustry = (updatedInd) => {
-    setIndustries(prev =>
-      prev.map(i => (i.id === updatedInd.id ? { ...i, ...updatedInd } : i))
-    );
+  const updateIndustry = async (updatedInd) => {
+    const updated = industries.map(i => (i.id === updatedInd.id ? { ...i, ...updatedInd } : i));
+    setIndustries(updated);
+    return await persistContentKey('industries', updated);
   };
 
-  const deleteIndustry = (industryId) => {
-    setIndustries(prev => prev.filter(i => i.id !== industryId));
+  const deleteIndustry = async (industryId) => {
+    const updated = industries.filter(i => i.id !== industryId);
+    setIndustries(updated);
+    return await persistContentKey('industries', updated);
   };
 
+  // Inquiries CRUD (Direct Supabase sync)
   const addInquiry = (inquiry) => {
     const newEntry = {
       id: inquiry.id || `inq-${Date.now()}`,
@@ -394,29 +347,61 @@ export const ContentProvider = ({ children }) => {
     return newEntry;
   };
 
-  const updateInquiryStatus = (inquiryId, newStatus) => {
+  const updateInquiryStatus = async (inquiryId, newStatus) => {
     setInquiries(prev =>
       prev.map(inq => (inq.id === inquiryId ? { ...inq, status: newStatus } : inq))
     );
+    try {
+      const { error } = await supabase
+        .from('inquiries')
+        .update({ status: newStatus })
+        .eq('id', inquiryId);
+
+      if (error) {
+        console.error('Supabase update inquiry error:', error.message);
+        return { success: false, error };
+      }
+      return { success: true };
+    } catch (err) {
+      console.error('Supabase update inquiry exception:', err);
+      return { success: false, error: err };
+    }
   };
 
-  const deleteInquiry = (inquiryId) => {
+  const deleteInquiry = async (inquiryId) => {
     setInquiries(prev => prev.filter(inq => inq.id !== inquiryId));
+    try {
+      const { error } = await supabase
+        .from('inquiries')
+        .delete()
+        .eq('id', inquiryId);
+
+      if (error) {
+        console.error('Supabase delete inquiry error:', error.message);
+        return { success: false, error };
+      }
+      return { success: true };
+    } catch (err) {
+      console.error('Supabase delete inquiry exception:', err);
+      return { success: false, error: err };
+    }
   };
 
-  const resetToDefaults = () => {
+  const resetToDefaults = async () => {
     setPageContent(initialPageContent);
     setServices(servicesData);
     setProducts(productCategories);
     setCompany(companyInfo);
     setIndustries(industriesData);
     setInquiries(sampleInquiries);
-    Object.values(STORAGE_KEYS).forEach(k => localStorage.removeItem(k));
+    await autoSeedSupabase();
   };
 
   return (
     <ContentContext.Provider
       value={{
+        isLoading,
+        isDbConnected,
         pageContent,
         updatePageContent,
         updateQuickFeature,

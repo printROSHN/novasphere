@@ -78,35 +78,39 @@ export default function IndustriesAdmin() {
     setNewProdInput('');
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
       toast.error('Industry name is required');
       return;
     }
 
-    if (isAddingNew) {
-      addIndustry(formData);
-      toast.success(`Industry "${formData.name}" added successfully`);
-      setIsAddingNew(false);
-    } else if (editingInd) {
-      updateIndustry({
-        ...editingInd,
-        ...formData
-      });
-      toast.success(`Industry "${formData.name}" updated successfully`);
-      setEditingInd(null);
+    try {
+      if (isAddingNew) {
+        await addIndustry(formData);
+        toast.success(`Industry "${formData.name}" saved to Supabase`);
+        setIsAddingNew(false);
+      } else if (editingInd) {
+        await updateIndustry({
+          ...editingInd,
+          ...formData
+        });
+        toast.success(`Industry "${formData.name}" saved to Supabase`);
+        setEditingInd(null);
+      }
+    } catch {
+      toast.error('Error saving industry to Supabase');
     }
   };
 
-  const handleDelete = (indId, indName) => {
+  const handleDelete = async (indId, indName) => {
     if (industries.length <= 1) {
       toast.error('You must keep at least one industry');
       return;
     }
     if (window.confirm(`Are you sure you want to remove the industry "${indName}"?`)) {
-      deleteIndustry(indId);
-      toast.success(`Industry "${indName}" removed`);
+      await deleteIndustry(indId);
+      toast.success(`Industry "${indName}" removed from Supabase`);
     }
   };
 
